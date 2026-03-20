@@ -1,0 +1,2974 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>BHUSMART</title>
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0a0c10">
+<link rel="manifest" href="manifest.json">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" media="print" onload="this.media='all'">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"></noscript>
+<script>
+// Lazy load JSZip only when needed
+let _jszipLoaded = false;
+function loadJSZip() {
+  return new Promise((res, rej) => {
+    if (typeof JSZip !== 'undefined') return res();
+    if (_jszipLoaded) return res();
+    const s = document.createElement('script');
+    s.src = 'https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js';
+    s.onload = () => { _jszipLoaded = true; res(); };
+    s.onerror = rej;
+    document.head.appendChild(s);
+  });
+}
+</script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{
+  --bg:#0a0c10;--s1:#111318;--s2:#181b23;--s3:#1e222c;--s4:#252a36;
+  --border:#252a36;--border2:#2e3444;
+  --green:#22c55e;--gdim:rgba(34,197,94,0.09);
+  --amber:#f59e0b;--adim:rgba(245,158,11,0.09);
+  --red:#ef4444;--rdim:rgba(239,68,68,0.09);
+  --blue:#3b82f6;--bdim:rgba(59,130,246,0.09);
+  --cyan:#06b6d4;--cdim:rgba(6,182,212,0.09);
+  --text:#e8eaf0;--t2:#5a6070;--t3:#2e3340;
+  --mono:'JetBrains Mono',monospace;
+  --sans:'Plus Jakarta Sans',sans-serif;
+}
+html,body{height:100%;overflow:hidden}
+body{font-family:var(--sans);background:var(--bg);color:var(--text);max-width:480px;margin:0 auto;display:flex;flex-direction:column}
+
+/* ── TOPBAR ── */
+.topbar{flex-shrink:0;background:rgba(10,12,16,0.98);border-bottom:1px solid var(--border);padding:10px 14px;display:flex;align-items:center;justify-content:space-between;gap:8px;z-index:50}
+.logo{font-family:var(--mono);font-size:.85rem;font-weight:700;letter-spacing:.04em;display:flex;align-items:center;gap:6px}
+.logo em{color:var(--green);font-style:normal}
+.logo-badge{font-size:.55rem;background:var(--cdim);border:1px solid rgba(6,182,212,.25);color:var(--cyan);padding:2px 6px;border-radius:4px;font-weight:700;letter-spacing:.06em}
+.tbbtns{display:flex;gap:5px}
+.icon-btn{height:30px;border-radius:7px;border:1px solid var(--border);background:var(--s2);color:var(--t2);font-size:.68rem;font-weight:700;cursor:pointer;display:flex;align-items:center;gap:4px;padding:0 9px;font-family:var(--sans);transition:all .15s;white-space:nowrap}
+.icon-btn:active{transform:scale(.92)}
+.icon-btn.g{background:var(--gdim);border-color:rgba(34,197,94,.2);color:var(--green)}
+.icon-btn.b{background:var(--bdim);border-color:rgba(59,130,246,.2);color:var(--blue)}
+.icon-btn.c{background:var(--cdim);border-color:rgba(6,182,212,.2);color:var(--cyan)}
+.icon-btn.a{background:var(--adim);border-color:rgba(245,158,11,.2);color:var(--amber)}
+
+/* ── MAIN + PAGES ── */
+.main{flex:1;overflow:hidden;position:relative}
+.page{display:none;height:100%;overflow-y:auto;-webkit-overflow-scrolling:touch}
+.page.active{display:block}
+.pi{padding:12px}
+
+/* ── BOTTOM NAV ── */
+.bnav{flex-shrink:0;background:rgba(10,12,16,0.98);border-top:1px solid var(--border);display:flex;padding:6px 0 16px;z-index:50}
+.ni{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;padding:4px 0;color:var(--t3);transition:all .15s;position:relative}
+.ni.active{color:var(--green)}
+.ni:active{transform:scale(.87)}
+.ni-icon{font-size:1.05rem;line-height:1}
+.ni-lbl{font-size:.5rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em}
+.ni-badge{position:absolute;top:1px;right:calc(50% - 14px);width:6px;height:6px;border-radius:50%;background:var(--cyan);display:none}
+.ni-badge.show{display:block}
+
+/* ── COMMON ── */
+.sl{font-size:.58rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--t2);margin:14px 0 8px;display:flex;align-items:center;gap:6px}
+.sl::after{content:'';flex:1;height:1px;background:var(--border)}
+.card{background:var(--s1);border:1px solid var(--border);border-radius:13px;padding:13px;margin-bottom:8px}
+.empty{text-align:center;padding:28px 16px;color:var(--t2)}
+.empty-icon{font-size:1.8rem;margin-bottom:8px;opacity:.25}
+.empty-text{font-size:.75rem;line-height:1.7}
+.inp{background:var(--s3);border:1px solid var(--border);border-radius:8px;padding:9px 12px;color:var(--text);font-size:.88rem;outline:none;width:100%;font-family:var(--sans);transition:border-color .15s}
+.inp:focus{border-color:var(--green)}
+.inp::placeholder{color:var(--t3)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.big-btn{width:100%;padding:13px;border-radius:12px;border:none;font-size:.88rem;font-weight:800;cursor:pointer;font-family:var(--sans);transition:all .15s;margin-bottom:7px;letter-spacing:-.01em}
+.big-btn:active{transform:scale(.97)}
+.btn-g{background:var(--green);color:#000}
+.btn-c{background:var(--cyan);color:#000}
+.btn-o{background:transparent;border:1px solid var(--border2);color:var(--t2)}
+.btn-o:active{background:var(--s2)}
+
+/* ══════════════ HOME PAGE ══════════════ */
+.hero{background:linear-gradient(135deg,var(--s2),var(--s3));border:1px solid var(--border);border-radius:14px;padding:16px;margin-bottom:12px;position:relative;overflow:hidden}
+.hero::after{content:'';position:absolute;top:-20px;right:-20px;width:90px;height:90px;background:radial-gradient(circle,rgba(34,197,94,.1),transparent 70%)}
+.hero-tag{font-size:.58rem;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--green);margin-bottom:4px}
+.hero-title{font-size:1rem;font-weight:800;margin-bottom:3px}
+.hero-sub{font-size:.7rem;color:var(--t2);line-height:1.55}
+.hero-stats{display:flex;gap:12px;margin-top:10px}
+.hstat{text-align:center;flex:1}
+.hstat-val{font-family:var(--mono);font-size:.95rem;font-weight:700;color:var(--green)}
+.hstat-lbl{font-size:.53rem;color:var(--t2);text-transform:uppercase;letter-spacing:.06em}
+
+/* Student cards */
+.stu-card{background:var(--s1);border:1px solid var(--border);border-radius:12px;margin-bottom:8px;overflow:hidden;animation:fadeUp .25s ease both}
+@keyframes fadeUp{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:translateY(0)}}
+.stu-card-hdr{padding:11px 13px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;gap:8px}
+.stu-left{display:flex;align-items:center;gap:10px;flex:1;min-width:0}
+.stu-avatar{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:.95rem;flex-shrink:0}
+.stu-info{flex:1;min-width:0}
+.stu-name{font-size:.85rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.stu-meta{font-size:.62rem;color:var(--t2);font-family:var(--mono);margin-top:2px}
+.stu-right{display:flex;flex-direction:column;align-items:flex-end;gap:3px}
+.stu-pct{font-family:var(--mono);font-size:.72rem;font-weight:700;color:var(--green)}
+.mini-bar{width:48px;height:4px;background:var(--border2);border-radius:99px;overflow:hidden}
+.mini-fill{height:100%;border-radius:99px;background:var(--green)}
+
+/* Chapters inside student */
+.stu-chapters{display:none;border-top:1px solid var(--border)}
+.stu-card.open .stu-chapters{display:block}
+.ch-row{padding:10px 13px;display:flex;align-items:center;gap:10px;cursor:pointer;border-bottom:1px solid var(--border);transition:background .1s}
+.ch-row:last-child{border-bottom:none}
+.ch-row:active{background:var(--s2)}
+.ch-dot{width:7px;height:7px;border-radius:50%;background:var(--border2);flex-shrink:0}
+.ch-dot.used{background:var(--green)}
+.ch-dot.partial{background:var(--amber)}
+.ch-info{flex:1;min-width:0}
+.ch-name{font-size:.82rem;font-weight:600}
+.ch-meta{font-size:.62rem;color:var(--t2);font-family:var(--mono);margin-top:1px}
+.ch-right{display:flex;align-items:center;gap:6px}
+.used-tag{font-size:.55rem;padding:1px 6px;border-radius:4px;background:var(--rdim);color:var(--red);font-weight:700;border:1px solid rgba(239,68,68,.2)}
+.fresh-tag{font-size:.55rem;padding:1px 6px;border-radius:4px;background:var(--gdim);color:var(--green);font-weight:700;border:1px solid rgba(34,197,94,.2)}
+
+.add-ch-row{padding:9px 13px;color:var(--t2);font-size:.73rem;cursor:pointer;display:flex;align-items:center;gap:5px;border-top:1px dashed var(--border);transition:color .15s}
+.add-ch-row:active{color:var(--green)}
+
+/* ══════════════ CHAPTER VIEW ══════════════ */
+#page-chapter{padding:0;display:none;flex-direction:column}
+#page-chapter.active{display:flex}
+.ch-topbar{flex-shrink:0;padding:10px 14px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border);background:var(--s1)}
+.ch-back{color:var(--t2);font-size:.8rem;cursor:pointer;padding:4px 0}
+.ch-back:active{color:var(--text)}
+.ch-topbar-info{flex:1;min-width:0}
+.ch-topbar-name{font-size:.88rem;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.ch-topbar-sub{font-size:.62rem;color:var(--t2);font-family:var(--mono)}
+
+/* Page tabs */
+.ptabs-wrap{flex-shrink:0;padding:7px 12px;border-bottom:1px solid var(--border);background:var(--bg);overflow-x:auto;display:flex;gap:5px;scrollbar-width:none}
+.ptabs-wrap::-webkit-scrollbar{display:none}
+.ptab{padding:5px 10px;border-radius:7px;border:1px solid var(--border);background:var(--s3);font-family:var(--mono);font-size:.7rem;font-weight:700;cursor:pointer;color:var(--t2);transition:all .15s;white-space:nowrap;flex-shrink:0}
+.ptab.active{background:var(--bdim);border-color:rgba(59,130,246,.3);color:var(--blue)}
+.ptab.has-used{border-color:rgba(239,68,68,.2)}
+.ptab:active{transform:scale(.9)}
+
+/* Image area */
+.ch-img-area{flex:1;min-height:0;overflow:auto;-webkit-overflow-scrolling:touch;background:var(--bg);display:flex;align-items:flex-start;justify-content:center;padding:10px}
+.ch-img-area img{width:100%;border-radius:8px;display:block}
+.img-loading{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;width:100%;height:100%;color:var(--t2)}
+.img-loading-icon{font-size:1.8rem;opacity:.3;animation:pulse 1.5s infinite}
+@keyframes pulse{0%,100%{opacity:.3}50%{opacity:.7}}
+.img-error{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;width:100%;padding:24px;text-align:center;color:var(--t2)}
+.img-error-path{font-size:.58rem;font-family:var(--mono);color:var(--t3);word-break:break-all}
+
+/* Q Panel */
+.q-panel{flex-shrink:0;background:var(--s1);border-top:2px solid var(--border2)}
+.q-panel-bar{padding:8px 12px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)}
+.q-panel-info{font-size:.68rem;color:var(--t2);font-family:var(--mono)}
+.q-panel-info b{color:var(--text)}
+.edit-area{padding:9px 12px;background:var(--adim);border-bottom:1px solid rgba(245,158,11,.15);display:none}
+.edit-row{display:flex;gap:6px;align-items:center;margin-bottom:5px}
+.edit-row:last-child{margin-bottom:0}
+.edit-lbl{font-size:.65rem;color:var(--amber);font-weight:700;font-family:var(--mono);width:22px;flex-shrink:0}
+.edit-inp{flex:1;background:var(--bg);border:1px solid rgba(245,158,11,.3);border-radius:7px;padding:7px 9px;color:var(--text);font-size:.82rem;outline:none;font-family:var(--mono)}
+.edit-inp:focus{border-color:var(--amber)}
+.edit-confirm-btn{background:var(--gdim);border:1px solid rgba(34,197,94,.3);color:var(--green);border-radius:7px;padding:0 10px;height:30px;font-size:.72rem;font-weight:700;cursor:pointer;white-space:nowrap}
+
+.chips-scroll{overflow-y:auto;-webkit-overflow-scrolling:touch;max-height:36vh}
+.tray-lbl{font-size:.58rem;font-weight:700;text-transform:uppercase;letter-spacing:.09em;padding:6px 12px 2px;border-top:1px solid var(--border)}
+.tray-lbl.q-lbl{color:var(--blue)}
+.tray-lbl.ex-lbl{color:var(--amber)}
+.q-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;padding:6px 12px 8px}
+.q-chip{aspect-ratio:1;border-radius:7px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;transition:all .1s;background:var(--s3);border:1px solid var(--border);user-select:none;gap:1px}
+.q-chip:active{transform:scale(.82)}
+.qnum{font-size:.63rem;font-weight:700;font-family:var(--mono)}
+.qdate{font-size:.36rem;line-height:1;text-align:center;font-family:var(--mono)}
+.q-chip.fresh .qnum{color:var(--text)}
+.q-chip.fresh .qdate{color:var(--green)}
+.q-chip.used{background:var(--rdim);border-color:rgba(239,68,68,.2)}
+.q-chip.used .qnum{color:var(--red)}
+.q-chip.used .qdate{color:rgba(239,68,68,.5)}
+.q-chip.selected{background:var(--gdim);border-color:rgba(34,197,94,.35)}
+.q-chip.selected .qnum{color:var(--green)}
+.empty-tray{text-align:center;padding:14px;color:var(--t3);font-size:.7rem}
+
+.q-action{padding:8px 12px 12px;border-top:1px solid var(--border)}
+.sel-summary{font-size:.65rem;color:var(--t2);font-family:var(--mono);margin-bottom:7px;min-height:14px}
+.sel-summary b{color:var(--green)}
+.sel-summary b.ex{color:var(--amber)}
+.btn-row{display:flex;gap:6px}
+.btn{padding:10px 12px;border-radius:10px;border:none;font-size:.78rem;font-weight:700;cursor:pointer;font-family:var(--sans);transition:all .15s;flex:1}
+.btn:active{transform:scale(.95)}
+.btn-green{background:var(--green);color:#000}
+.btn-cyan{background:var(--cyan);color:#000}
+.btn-ghost{background:var(--s3);color:var(--t2);border:1px solid var(--border)}
+
+/* ══════════════ SMART PAPER PAGE ══════════════ */
+#page-paper{padding:0;display:none;flex-direction:column}
+#page-paper.active{display:flex}
+.paper-topbar{flex-shrink:0;padding:10px 14px;display:flex;align-items:center;gap:10px;border-bottom:1px solid var(--border);background:var(--s1)}
+.paper-topbar-title{flex:1;font-size:.88rem;font-weight:800}
+.paper-scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:12px}
+
+/* paper student selector */
+.stu-selector{display:flex;gap:7px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none;margin-bottom:12px}
+.stu-selector::-webkit-scrollbar{display:none}
+.stu-sel-btn{flex-shrink:0;padding:6px 12px;border-radius:20px;border:1px solid var(--border);background:var(--s2);color:var(--t2);font-size:.72rem;font-weight:700;cursor:pointer;transition:all .15s;display:flex;align-items:center;gap:5px}
+.stu-sel-btn.active{background:var(--cdim);border-color:rgba(6,182,212,.35);color:var(--cyan)}
+.stu-sel-btn:active{transform:scale(.92)}
+
+/* paper config */
+.paper-config{background:var(--s2);border:1px solid var(--border);border-radius:12px;padding:13px;margin-bottom:10px}
+.pc-row{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.pc-row:last-child{margin-bottom:0}
+.pc-label{font-size:.72rem;font-weight:600;color:var(--t2)}
+.pc-val{font-family:var(--mono);font-size:.8rem;font-weight:700;color:var(--text)}
+.num-inp{background:var(--s3);border:1px solid var(--border);border-radius:7px;padding:6px 10px;color:var(--text);font-family:var(--mono);font-size:.82rem;width:65px;text-align:center;outline:none}
+.num-inp:focus{border-color:var(--cyan)}
+
+/* generated paper output */
+.gen-paper-wrap{background:var(--s2);border:1px solid var(--border2);border-radius:12px;overflow:hidden;margin-bottom:10px}
+.gp-header{background:var(--s3);padding:12px 14px;border-bottom:1px solid var(--border)}
+.gp-title{font-size:.88rem;font-weight:800;margin-bottom:3px}
+.gp-meta{font-size:.62rem;color:var(--t2);font-family:var(--mono)}
+.gp-chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.gp-chip{font-size:.62rem;padding:2px 8px;border-radius:4px;border:1px solid var(--border);color:var(--t2)}
+.gp-chip.fresh{background:var(--gdim);border-color:rgba(34,197,94,.25);color:var(--green)}
+.gp-chip.weak{background:var(--rdim);border-color:rgba(239,68,68,.25);color:var(--red)}
+
+/* paper section blocks */
+.gp-section{border-bottom:1px solid var(--border)}
+.gp-section:last-child{border-bottom:none}
+.gp-sec-head{padding:10px 14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;background:var(--s3)}
+.gp-sec-head.weak-sec{background:rgba(239,68,68,.04)}
+.gp-sec-left{display:flex;align-items:center;gap:8px}
+.gp-range{font-family:var(--mono);font-size:.68rem;font-weight:700;color:var(--cyan);background:var(--cdim);border:1px solid rgba(6,182,212,.2);padding:2px 7px;border-radius:4px}
+.gp-ch-name{font-size:.78rem;font-weight:700}
+.gp-right{display:flex;align-items:center;gap:6px}
+.diff-pill{font-size:.58rem;padding:2px 7px;border-radius:4px;font-weight:700;text-transform:uppercase}
+.dp-w{background:var(--rdim);color:var(--red)}
+.dp-n{background:var(--bdim);color:var(--blue)}
+.dp-s{background:var(--gdim);color:var(--green)}
+.gp-chev{color:var(--t2);font-size:.65rem;transition:transform .2s}
+.gp-chev.open{transform:rotate(180deg)}
+
+.gp-sec-body{display:none;border-top:1px solid var(--border)}
+.gp-sec-body.open{display:block}
+
+/* Question + image rows inside paper section */
+.gp-q-row{display:flex;align-items:center;gap:8px;padding:8px 14px;border-bottom:1px solid var(--border)}
+.gp-q-row:last-child{border-bottom:none}
+.gp-q-num{font-family:var(--mono);font-size:.62rem;color:var(--t2);min-width:28px;flex-shrink:0}
+.gp-q-loc{font-family:var(--mono);font-size:.72rem;font-weight:600;flex:1}
+.gp-q-page{font-size:.58rem;padding:1px 6px;border-radius:4px;background:var(--s4);color:var(--t2);font-family:var(--mono)}
+.fresh-dot{width:5px;height:5px;border-radius:50%;background:var(--green);flex-shrink:0}
+.used-dot{width:5px;height:5px;border-radius:50%;background:var(--red);flex-shrink:0}
+.type-ex{font-size:.56rem;padding:1px 5px;border-radius:3px;background:var(--gdim);color:var(--green);font-weight:700}
+.type-exr{font-size:.56rem;padding:1px 5px;border-radius:3px;background:var(--bdim);color:var(--blue);font-weight:700}
+.q-actions-wrap{position:relative;flex-shrink:0;margin-left:2px}
+.q-act-toggle{background:none;border:none;color:var(--t2);font-size:.9rem;cursor:pointer;padding:2px 5px;border-radius:5px;line-height:1;transition:all .15s}
+.q-act-toggle:active{background:var(--s3);color:var(--text)}
+.q-act-popup{position:absolute;right:0;top:100%;background:var(--s2);border:1px solid var(--border2);border-radius:9px;padding:5px;z-index:50;display:flex;flex-direction:column;gap:4px;min-width:110px;box-shadow:0 8px 24px rgba(0,0,0,.5);animation:popIn .15s ease}
+.q-act-opt{padding:7px 11px;border-radius:6px;border:none;font-size:.75rem;font-weight:700;cursor:pointer;font-family:var(--sans);text-align:left;transition:all .1s;width:100%}
+.q-act-opt:active{transform:scale(.95)}
+.remove-opt{background:var(--rdim);color:var(--red);border:1px solid rgba(239,68,68,.2)}
+.replace-opt{background:var(--cdim);color:var(--cyan);border:1px solid rgba(6,182,212,.2)}
+.gp-q-row.removed{opacity:.3;text-decoration:line-through;pointer-events:none}
+.gp-q-row.replaced{background:rgba(6,182,212,.04)}
+
+/* Wrong / Forgetting curve styles */
+.q-chip.wrong{background:rgba(239,68,68,.12);border-color:rgba(239,68,68,.4)}
+.q-chip.wrong .qnum{color:var(--red)}
+.q-chip.wrong-due{background:rgba(245,158,11,.12);border-color:rgba(245,158,11,.4)}
+.q-chip.wrong-due .qnum{color:var(--amber)}
+.wrong-badge{font-size:.38rem;padding:1px 3px;border-radius:2px;background:var(--red);color:#fff;font-weight:700;line-height:1.2}
+.due-badge{font-size:.38rem;padding:1px 3px;border-radius:2px;background:var(--amber);color:#000;font-weight:700;line-height:1.2}
+
+/* Wrong mark popup — clean thick 4-col bar */
+.diff-popup{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:250;display:none;align-items:flex-end;justify-content:center}
+.diff-popup.open{display:flex}
+.diff-sheet{width:100%;max-width:480px;background:var(--s1);border-top:2px solid var(--border2);padding:10px 10px calc(16px + env(safe-area-inset-bottom))}
+.diff-handle{display:none}
+.diff-title{display:none}
+.diff-sub{display:none}
+.diff-btns{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin:0}
+.diff-btn{padding:22px 4px;border-radius:13px;border:none;font-size:.85rem;font-weight:800;cursor:pointer;font-family:var(--sans);text-align:center;display:flex;flex-direction:column;align-items:center;gap:5px;line-height:1}
+.diff-btn span{font-size:.55rem;font-weight:600;opacity:.75}
+.diff-btn:active{opacity:.7}
+.diff-ok{background:rgba(90,96,112,.18);color:var(--text);border:1px solid var(--border2)}
+.diff-easy{background:rgba(34,197,94,.13);color:var(--green);border:1px solid rgba(34,197,94,.3)}
+.diff-medium{background:rgba(245,158,11,.13);color:var(--amber);border:1px solid rgba(245,158,11,.3)}
+.diff-hard{background:rgba(239,68,68,.13);color:var(--red);border:1px solid rgba(239,68,68,.3)}
+.diff-next{display:none}
+
+/* Paper review section */
+.review-banner{background:rgba(245,158,11,.07);border:1px solid rgba(245,158,11,.2);border-radius:11px;padding:11px 13px;margin-bottom:10px;display:none}
+.review-banner.show{display:block}
+.review-banner-title{font-size:.78rem;font-weight:800;color:var(--amber);margin-bottom:6px;display:flex;align-items:center;gap:6px}
+.review-item{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid rgba(245,158,11,.1);font-size:.72rem}
+.review-item:last-child{border-bottom:none}
+.review-ch{color:var(--t2);font-size:.62rem;font-family:var(--mono)}
+.review-loc{font-weight:600;flex:1}
+.diff-pill-s{font-size:.55rem;padding:1px 6px;border-radius:4px;font-weight:700}
+.dp-easy{background:rgba(34,197,94,.15);color:var(--green)}
+.dp-medium{background:rgba(245,158,11,.15);color:var(--amber)}
+.dp-hard{background:rgba(239,68,68,.15);color:var(--red)}
+.gp-q-row.is-wrong{background:rgba(239,68,68,.04);border-left:2px solid var(--red)}
+.gp-q-row.is-due{background:rgba(245,158,11,.04);border-left:2px solid var(--amber)}
+
+/* Chapter distribution editor */
+.ch-dist-row{background:var(--s2);border:1px solid var(--border);border-radius:10px;padding:9px 12px;margin-bottom:6px;display:flex;align-items:center;gap:10px}
+.ch-dist-row.over-avail{border-color:rgba(239,68,68,.3);background:rgba(239,68,68,.03)}
+.cdr-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.cdr-info{flex:1;min-width:0}
+.cdr-name{font-size:.78rem;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cdr-avail{font-size:.6rem;color:var(--t2);font-family:var(--mono);margin-top:1px}
+.cdr-stepper{display:flex;align-items:center;gap:5px;flex-shrink:0}
+.cdr-btn{width:26px;height:26px;border-radius:7px;border:1px solid var(--border2);background:var(--s3);color:var(--text);font-size:.9rem;cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:700;transition:all .1s}
+.cdr-btn:active{transform:scale(.85);background:var(--s4)}
+.cdr-num-inp{width:36px;background:var(--s3);border:1px solid var(--border2);border-radius:6px;padding:3px 5px;color:var(--text);font-family:var(--mono);font-size:.82rem;font-weight:700;text-align:center;outline:none}
+.cdr-num-inp:focus{border-color:var(--cyan)}
+
+/* Page thumbnail strip */
+.thumb-strip{display:flex;gap:6px;overflow-x:auto;padding:8px 14px;border-top:1px solid var(--border);scrollbar-width:none;background:rgba(0,0,0,.15)}
+.thumb-strip::-webkit-scrollbar{display:none}
+.thumb-img{width:72px;height:72px;border-radius:7px;object-fit:cover;border:1px solid var(--border);cursor:pointer;flex-shrink:0;transition:transform .15s}
+.thumb-img:active{transform:scale(.88)}
+.thumb-placeholder{width:72px;height:72px;border-radius:7px;background:var(--s3);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:.58rem;color:var(--t3);text-align:center;padding:4px;flex-shrink:0}
+
+/* Download button in paper */
+.paper-dl-bar{padding:10px 12px;background:rgba(6,182,212,.04);border-top:1px solid rgba(6,182,212,.1)}
+.paper-dl-btn{width:100%;padding:11px;border-radius:9px;border:1px solid rgba(6,182,212,.25);background:rgba(6,182,212,.08);color:var(--cyan);font-family:var(--sans);font-size:.82rem;font-weight:700;cursor:pointer;transition:all .15s}
+.paper-dl-btn:active{transform:scale(.97)}
+
+/* ══════════════ QUEUE PAGE ══════════════ */
+.q-card{background:var(--s1);border:1px solid var(--border);border-radius:12px;margin-bottom:8px;overflow:hidden;animation:fadeUp .2s ease both}
+.q-card-hdr{padding:11px 13px;display:flex;align-items:flex-start;gap:10px;cursor:pointer}
+.q-card-hdr:active{background:var(--s2)}
+.q-card-icon{font-size:1.1rem;flex-shrink:0;margin-top:1px}
+.q-card-info{flex:1;min-width:0}
+.q-card-label{font-size:.84rem;font-weight:800;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.q-card-meta{font-size:.62rem;color:var(--t2);font-family:var(--mono)}
+.q-card-actions{display:flex;gap:6px;padding:0 13px 12px}
+
+/* ══════════════ HISTORY PAGE ══════════════ */
+.hist-card{background:var(--s1);border:1px solid var(--border);border-radius:11px;margin-bottom:7px;overflow:hidden}
+.hist-card-hdr{padding:11px 13px;cursor:pointer;display:flex;align-items:flex-start;gap:8px}
+.hist-card-hdr:active{background:var(--s2)}
+.hist-hdr-main{flex:1;min-width:0}
+.hist-date{font-size:.65rem;font-family:var(--mono);color:var(--amber);margin-bottom:4px;font-weight:600}
+.hist-chapter{font-size:.82rem;font-weight:700;margin-bottom:3px}
+.hist-pages{font-size:.66rem;color:var(--t2);font-family:var(--mono);line-height:1.8}
+.hist-chev{color:var(--t2);font-size:.65rem;transition:transform .2s;margin-top:3px;flex-shrink:0}
+.hist-chev.open{transform:rotate(180deg)}
+.hist-card-body{display:none;border-top:1px solid var(--border)}
+.hist-card-body.open{display:block}
+.hist-q-row{padding:14px 13px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border);cursor:pointer;transition:background .1s}
+.hist-q-row:last-child{border-bottom:none}
+.hist-q-row:active{background:var(--s2)}
+.hist-q-row.wrong-row{background:rgba(239,68,68,.04)}
+.hist-q-loc{font-family:var(--mono);font-size:.82rem;font-weight:700;flex:1}
+.hist-q-ch{font-size:.68rem;color:var(--t2);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wrong-pill{font-size:.65rem;padding:5px 10px;border-radius:6px;font-weight:700;cursor:pointer}
+.wp-none{background:var(--s3);color:var(--t3);border:1px solid var(--border)}
+.wp-easy{background:rgba(34,197,94,.12);color:var(--green);border:1px solid rgba(34,197,94,.25)}
+.wp-medium{background:rgba(245,158,11,.12);color:var(--amber);border:1px solid rgba(245,158,11,.25)}
+.wp-hard{background:rgba(239,68,68,.12);color:var(--red);border:1px solid rgba(239,68,68,.25)}
+
+/* ══════════════ SETTINGS PAGE ══════════════ */
+.set-card{background:var(--s1);border:1px solid var(--border);border-radius:11px;padding:12px;margin-bottom:7px}
+.set-lbl{font-size:.6rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--t2);margin-bottom:6px}
+
+/* ══════════════ IMAGE FULLSCREEN ══════════════ */
+#img-fs{position:fixed;inset:0;background:rgba(0,0,0,.94);z-index:300;display:none;flex-direction:column}
+#img-fs.open{display:flex}
+.ifs-top{padding:10px 14px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border);background:var(--s1);flex-shrink:0}
+.ifs-title{font-size:.82rem;font-weight:700}
+.ifs-close{font-size:1.2rem;cursor:pointer;color:var(--t2);padding:4px 8px}
+.ifs-wrap{flex:1;overflow:auto;display:flex;align-items:flex-start;justify-content:center;padding:10px}
+.ifs-wrap img{width:100%;border-radius:8px}
+.ifs-bottom{padding:8px 12px 20px;border-top:1px solid var(--border);background:var(--s1);flex-shrink:0;display:flex;gap:8px}
+
+/* ══════════════ DOWNLOAD OVERLAY ══════════════ */
+#dl-overlay{position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:400;display:none;flex-direction:column;align-items:center;justify-content:center;gap:12px}
+#dl-overlay.open{display:flex}
+.dl-spin{width:40px;height:40px;border:3px solid var(--border2);border-top-color:var(--cyan);border-radius:50%;animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.dl-text{font-size:.8rem;color:var(--text);text-align:center}
+.dl-bar{width:200px;height:5px;background:var(--border);border-radius:99px;overflow:hidden}
+.dl-fill{height:100%;background:var(--cyan);border-radius:99px;transition:width .3s}
+
+/* ══════════════ MODAL ══════════════ */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:200;align-items:flex-end;justify-content:center}
+.modal-bg.open{display:flex}
+.modal-sheet{width:100%;max-width:480px;background:var(--s1);border-radius:18px 18px 0 0;padding:14px 16px 34px;border-top:1px solid var(--border2);max-height:80vh;overflow-y:auto}
+.modal-handle{width:30px;height:3px;background:var(--border2);border-radius:2px;margin:0 auto 13px}
+.modal-title{font-size:.95rem;font-weight:800;margin-bottom:4px}
+.modal-hint{font-size:.72rem;color:var(--t2);margin-bottom:12px;line-height:1.5}
+.modal-inp{width:100%;background:var(--bg);border:1px solid var(--border);border-radius:9px;padding:10px 12px;color:var(--text);font-size:.88rem;outline:none;margin-bottom:8px;transition:border-color .15s;font-family:var(--sans)}
+.modal-inp:focus{border-color:var(--green)}
+.modal-inp::placeholder{color:var(--t3)}
+.mbtn-row{display:flex;gap:7px;margin-top:6px}
+.mbtn{padding:11px;border-radius:10px;border:none;font-size:.8rem;font-weight:700;cursor:pointer;font-family:var(--sans);flex:1;transition:all .15s}
+.mbtn:active{transform:scale(.95)}
+.mbtn-g{background:var(--green);color:#000}
+.mbtn-c{background:var(--cyan);color:#000}
+.mbtn-ghost{background:var(--s3);color:var(--t2);border:1px solid var(--border)}
+
+/* toast */
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(14px);background:var(--s2);border:1px solid var(--border2);border-radius:10px;padding:8px 15px;font-size:.74rem;font-weight:600;opacity:0;transition:all .2s;pointer-events:none;white-space:nowrap;z-index:500;box-shadow:0 8px 24px rgba(0,0,0,.5)}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.toast.s{border-color:rgba(34,197,94,.35);color:var(--green)}
+.toast.e{border-color:rgba(239,68,68,.35);color:var(--red)}
+.toast.a{border-color:rgba(245,158,11,.35);color:var(--amber)}
+.toast.c{border-color:rgba(6,182,212,.35);color:var(--cyan)}
+</style>
+</head>
+<body>
+
+<!-- SPLASH / AUTO-SYNC SCREEN -->
+<div id="splash" style="display:none;position:fixed;inset:0;background:#0a0c10;z-index:999;flex-direction:column;align-items:center;justify-content:center;gap:16px;">
+  <div style="font-size:2.5rem;">📚</div>
+  <div style="font-family:'JetBrains Mono',monospace;font-size:1rem;font-weight:700;color:#e8eaf0;letter-spacing:.04em;">BHU<span style="color:#22c55e;">SMART</span></div>
+  <div style="width:40px;height:40px;border:3px solid #252a36;border-top-color:#22c55e;border-radius:50%;animation:spin .7s linear infinite;margin-top:8px;"></div>
+  <div style="font-size:.72rem;color:#5a6070;">GitHub se sync ho raha hai...</div>
+</div>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="logo">BHU<em>SMART</em></div>
+  <div class="tbbtns">
+    <button class="icon-btn g" onclick="saveToGithub()">↑ Save</button>
+    <button class="icon-btn b" onclick="loadFromGithub()">↓ Load</button>
+  </div>
+</div>
+
+<div class="main">
+
+<!-- ══════ HOME ══════ -->
+<div class="page active" id="page-home">
+<div class="pi">
+  <div class="hero">
+    <div class="hero-tag">Bhumi Smart Tracker</div>
+    <div class="hero-title">BHUSMART 📚</div>
+    <div class="hero-sub">History-based auto paper • Fresh questions pehle • GitHub image sync</div>
+    <div class="hero-stats">
+      <div class="hstat"><div class="hstat-val" id="h-students">0</div><div class="hstat-lbl">Students</div></div>
+      <div class="hstat"><div class="hstat-val" id="h-total-used">0</div><div class="hstat-lbl">Qs Used</div></div>
+      <div class="hstat"><div class="hstat-val" id="h-sessions">0</div><div class="hstat-lbl">Sessions</div></div>
+    </div>
+  </div>
+
+  <div style="display:flex;align-items:center;justify-content:space-between;">
+    <div class="sl" style="flex:1;margin:0 0 9px;">Students</div>
+    <button class="icon-btn c" onclick="openModal('addStudent')" style="margin-bottom:9px;margin-left:10px;">＋ Student</button>
+  </div>
+
+  <div id="students-list"></div>
+  <button class="big-btn btn-c" onclick="showPage('paper')">⚡ Smart Paper Generator</button>
+</div>
+</div>
+
+<!-- ══════ CHAPTER VIEW ══════ -->
+<div class="page" id="page-chapter">
+  <div class="ch-topbar">
+    <div class="ch-back" onclick="showPage('home')">← Back</div>
+    <div class="ch-topbar-info">
+      <div class="ch-topbar-name" id="chTopName"></div>
+      <div class="ch-topbar-sub" id="chTopSub"></div>
+    </div>
+    <button class="icon-btn a" onclick="openModal('addPage')">+ Page</button>
+  </div>
+  <div class="ptabs-wrap" id="pageTabs"></div>
+  <div class="ch-img-area" id="chImgArea">
+    <div class="img-loading"><div class="img-loading-icon">📄</div><div style="font-size:.73rem;">Page tab select karo</div></div>
+  </div>
+  <div class="q-panel">
+    <div class="q-panel-bar">
+      <div class="q-panel-info" id="qPanelInfo">—</div>
+      <button class="icon-btn" onclick="toggleEdit()" style="height:26px;font-size:.62rem;">✏ Edit</button>
+    </div>
+    <div class="edit-area" id="editArea">
+      <div class="edit-row">
+        <span class="edit-lbl">Q:</span>
+        <input class="edit-inp" id="qInp" placeholder="1, 3, 5-8">
+        <button class="edit-confirm-btn" onclick="confirmEdit()">✓</button>
+      </div>
+      <div class="edit-row">
+        <span class="edit-lbl" style="color:var(--amber);">Ex:</span>
+        <input class="edit-inp" id="exInp" placeholder="2, 4">
+      </div>
+    </div>
+    <div class="chips-scroll">
+      <div id="qTray" style="display:none;">
+        <div class="tray-lbl q-lbl">Questions</div>
+        <div class="q-grid" id="qGrid"></div>
+      </div>
+      <div id="exTray" style="display:none;">
+        <div class="tray-lbl ex-lbl">Examples</div>
+        <div class="q-grid" id="exGrid"></div>
+      </div>
+      <div id="emptyTray" class="empty-tray">✏ Edit dabao → Q/Ex numbers likho</div>
+    </div>
+    <div class="q-action">
+      <div class="sel-summary" id="selSummary">Koi select nahi</div>
+      <div class="btn-row">
+        <button class="btn btn-ghost" onclick="clearSel()">Clear</button>
+        <button class="btn btn-green" onclick="downloadAndMark()">↓ Download + Mark</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════ SMART PAPER ══════ -->
+<div class="page" id="page-paper">
+  <div class="ch-topbar" style="flex-shrink:0;">
+    <div class="ch-back" onclick="showPage('home')">← Back</div>
+    <div class="ch-topbar-info">
+      <div class="ch-topbar-name">⚡ Smart Paper Generator</div>
+      <div class="ch-topbar-sub">History-based auto selection</div>
+    </div>
+    <button class="icon-btn c" onclick="generatePaper()" style="flex-shrink:0;">Generate</button>
+  </div>
+  <div style="flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:12px;">
+
+    <!-- Review Banner — due questions -->
+    <div class="review-banner" id="reviewBanner">
+      <div class="review-banner-title">🔁 Aaj Review Karo <span id="reviewCount" style="font-size:.62rem;background:var(--amber);color:#000;padding:1px 6px;border-radius:4px;"></span></div>
+      <div id="reviewList"></div>
+    </div>
+
+    <!-- Student selector -->
+    <div class="sl" style="margin-top:4px;">Student</div>
+    <div class="stu-selector" id="paperStuSelector"></div>
+
+    <!-- Config -->
+    <div class="sl">Paper Config</div>
+    <div class="paper-config">
+      <div class="pc-row">
+        <span class="pc-label">Total Questions</span>
+        <input class="num-inp" id="paperQ" type="number" value="" placeholder="?" min="1" max="100" oninput="updateChDist()">
+      </div>
+      <div class="pc-row">
+        <span class="pc-label">Priority Mode</span>
+        <select class="num-inp" id="paperMode" style="width:auto;font-size:.72rem;" onchange="onModeChange()">
+          <option value="fresh">🟢 Fresh First</option>
+          <option value="weak">🔴 Weak Chapters First</option>
+          <option value="balanced">⚖ Balanced</option>
+          <option value="only_wrong">✗ Only Wrong Questions</option>
+          <option value="only_due">🔴 Only Hard Questions</option>
+          <option value="important">⭐ Important (2+ baar galat)</option>
+          <option value="all_equal">📊 All Chapters Equal</option>
+          <option value="custom">🎛 Custom (Manual)</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Chapter Distribution Editor -->
+    <div id="chDistSection">
+    <div class="sl">
+      Chapter Distribution
+      <span id="dist-total-badge" style="font-size:.6rem;padding:2px 8px;border-radius:4px;background:var(--gdim);color:var(--green);font-weight:700;letter-spacing:0;text-transform:none;margin-left:4px;">0/0</span>
+      <button class="icon-btn" onclick="resetChDist()" style="margin-left:auto;height:22px;font-size:.58rem;">↺ Auto</button>
+    </div>
+    <div id="ch-dist-editor" style="margin-bottom:10px;"></div>
+    </div>
+    <div id="modeHintSection" style="display:none;margin-bottom:10px;background:var(--s2);border:1px solid var(--border);border-radius:10px;padding:11px 13px;font-size:.72rem;color:var(--t2);line-height:1.7;"></div>
+
+    <!-- Output -->
+    <div id="paperOutput" style="display:none;">
+      <div class="sl">Generated Paper</div>
+      <div id="paperContent"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-bottom:7px;">
+        <button class="big-btn btn-c" style="margin:0;font-size:.75rem;" onclick="downloadPaperImages()">🖼 Alag Alag</button>
+        <button class="big-btn btn-c" style="margin:0;font-size:.75rem;background:var(--cyan);color:#000;" onclick="downloadPaperImagesZip()">🗜 ZIP File</button>
+      </div>
+      <button class="big-btn btn-g" onclick="saveToQueue()">📋 Queue mein Save</button>
+      <button class="big-btn btn-o" onclick="generatePaper()">↺ Regenerate</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════ QUEUE ══════ -->
+<div class="page" id="page-queue">
+<div class="pi">
+  <div class="sl" style="margin-top:4px;">📋 Paper Queue <span id="queueCount" style="font-size:.6rem;padding:1px 7px;border-radius:4px;background:var(--cdim);color:var(--cyan);font-weight:700;letter-spacing:0;text-transform:none;margin-left:4px;"></span></div>
+  <div style="font-size:.68rem;color:var(--t2);margin-bottom:10px;line-height:1.7;">Papers yahan save hote hain. Jab test dena ho → <b style="color:var(--cyan);">Download ZIP</b> dabao — download hote hi questions used mark ho jaayenge aur history mein save ho jaayega.</div>
+  <div id="queueList"></div>
+</div>
+</div>
+
+<!-- ══════ HISTORY ══════ -->
+<div class="page" id="page-history">
+<div class="pi">
+  <!-- DOWNLOAD SECTION -->
+  <div class="sl" style="margin-top:4px;">📥 Download</div>
+  <div id="histDownloadSection" style="display:none;">
+    <div style="background:var(--s2);border:1px solid var(--border);border-radius:12px;padding:13px;margin-bottom:10px;">
+      <div style="font-size:.72rem;color:var(--t2);margin-bottom:10px;font-family:var(--mono);">Generated paper abhi active hai — Paper tab mein download karo</div>
+      <button class="big-btn btn-c" style="margin:0;" onclick="showPage('paper')">⚡ Paper Tab Pe Jao</button>
+    </div>
+  </div>
+  <div id="histDownloadEmpty" style="display:none;"></div>
+
+  <!-- TEST HISTORY -->
+  <div class="sl" style="margin-top:10px;">🕐 Test History</div>
+  <div id="histList"></div>
+</div>
+</div>
+
+<!-- ══════ SETTINGS ══════ -->
+<div class="page" id="page-settings">
+<div class="pi">
+  <div class="sl" style="margin-top:4px;">GitHub Config</div>
+
+  <div class="set-card" style="background:rgba(6,182,212,.05);border-color:rgba(6,182,212,.15);">
+    <div style="font-size:.62rem;color:var(--cyan);font-weight:700;margin-bottom:6px;">📌 Repo (fixed)</div>
+    <div style="font-family:var(--mono);font-size:.78rem;color:var(--t2);">raakpk507-coder / BHUMI-TEST</div>
+  </div>
+
+  <div class="set-card">
+    <div class="set-lbl">Personal Access Token <span style="color:var(--red);">*</span></div>
+    <input class="inp" id="ghToken" type="password" placeholder="ghp_xxxxxxxxxxxx">
+    <div style="font-size:.6rem;color:var(--t2);margin-top:6px;line-height:1.7;">
+      GitHub → Profile → Settings → Developer settings →<br>
+      Personal access tokens → Tokens (classic) →<br>
+      Generate new token → <b style="color:var(--green);">repo</b> tick karo → Copy
+    </div>
+  </div>
+
+  <button class="big-btn btn-g" onclick="saveSettings()">✓ Save Token & Sync</button>
+</div>
+</div>
+
+</div><!-- /main -->
+
+<!-- BOTTOM NAV -->
+<div class="bnav">
+  <div class="ni active" id="ni-home"     onclick="showPage('home')"><div class="ni-icon">📚</div><div class="ni-lbl">Home</div></div>
+  <div class="ni"        id="ni-paper"    onclick="showPage('paper');renderPaperStuSelector();renderReviewBanner()"><div class="ni-icon">⚡</div><div class="ni-lbl">Paper</div><div class="ni-badge" id="nb-paper"></div></div>
+  <div class="ni"        id="ni-queue"    onclick="showPage('queue');renderQueuePage()"><div class="ni-icon">📋</div><div class="ni-lbl">Queue</div><div class="ni-badge" id="nb-queue"></div></div>
+  <div class="ni"        id="ni-history"  onclick="showPage('history');renderHistory();renderHistoryPage()"><div class="ni-icon">🕐</div><div class="ni-lbl">History</div></div>
+  <div class="ni"        id="ni-settings" onclick="showPage('settings')"><div class="ni-icon">⚙️</div><div class="ni-lbl">Settings</div></div>
+</div>
+
+<!-- IMAGE FULLSCREEN -->
+<div id="img-fs">
+  <div class="ifs-top">
+    <div class="ifs-title" id="ifs-title"></div>
+    <div class="ifs-close" onclick="closeImgFs()">✕</div>
+  </div>
+  <div class="ifs-wrap"><img id="ifs-img" src="" alt=""></div>
+  <div class="ifs-bottom">
+    <button class="btn btn-cyan" onclick="dlSingleImg()">↓ Download</button>
+    <button class="btn btn-ghost" onclick="closeImgFs()">Close</button>
+  </div>
+</div>
+
+<!-- DOWNLOAD OVERLAY -->
+<div id="dl-overlay">
+  <div class="dl-spin"></div>
+  <div class="dl-text" id="dl-text">Downloading...</div>
+  <div class="dl-bar"><div class="dl-fill" id="dl-fill" style="width:0%"></div></div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-bg" id="modal" onclick="if(event.target===this)closeModal()">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="mTitle"></div>
+    <div class="modal-hint"  id="mHint"></div>
+    <div id="mBody"></div>
+    <div class="mbtn-row">
+      <button class="mbtn mbtn-ghost" onclick="closeModal()">Cancel</button>
+      <button class="mbtn mbtn-g" id="mConfirmBtn" onclick="confirmModal()">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<!-- DIFFICULTY / WRONG MARK POPUP -->
+<div class="diff-popup" id="diffPopup" onclick="if(event.target===this)closeDiffPopup()">
+  <div class="diff-sheet">
+    <div class="diff-handle"></div>
+    <div class="diff-title" id="diffPopupTitle">Wrong Mark Karo</div>
+    <div class="diff-sub" id="diffPopupSub">Kitna mushkil tha?</div>
+    <div class="diff-btns">
+      <button class="diff-btn diff-ok"      onclick="closeDiffPopup()">OK<span>Default</span></button>
+      <button class="diff-btn diff-easy"    onclick="markWrong('easy')">😊 Easy<span>7 din baad</span></button>
+      <button class="diff-btn diff-medium"  onclick="markWrong('medium')">😐 Medium<span>3 din baad</span></button>
+      <button class="diff-btn diff-hard"    onclick="markWrong('hard')">😰 Hard<span>1 din baad</span></button>
+    </div>
+    <div class="diff-next" id="diffPopupNext"></div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ══════════════════════════════════════════════════════════
+// STATE
+// ══════════════════════════════════════════════════════════
+/*
+DATA STRUCTURE (GitHub: bhusmart_data.json)
+{
+  students: [{
+    id, name, emoji, class,
+    classes: {
+      "Class 10": {
+        chapters: {
+          "Mensuration": {
+            folder: "books/class10/ch9",
+            prefix: "mensuration",
+            pages: [{
+              total: 0,        // total questions on this page (Q)
+              exTotal: 0,      // total examples
+              questions: { 1: {used:0, lastDate:null}, ... },
+              examples:  { 1: {used:0, lastDate:null}, ... }
+            }]
+          }
+        }
+      }
+    }
+  }],
+  history: [...]
+}
+*/
+
+let data = { students: [], history: [], queue: [] };
+let activeStuId = null;  // currently open student
+let activeClass = null;
+let activeChapter = null;
+let activePage = null;
+let selQ = {};           // {pageNum: ['q1','ex2',...]}
+let modalMode = null;
+let currentPaper = null; // last generated paper
+let paperStuId = null;   // student for whom paper is being generated
+let fsImgUrl = '';
+
+const DIFF_W = { weak:1.5, normal:1.0, strong:0.7 };
+const EMOJIS = ['👦','👧','🧑','🎓','⭐','🌟','🔥','💡','🎯','🏆'];
+
+// ══════════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════════
+window.onload = () => {
+  loadSettingsUI();
+  const s = getS();
+  if (s.token && s.owner && s.repo) {
+    document.getElementById('splash').style.display = 'flex';
+    loadFromGithub().finally(() => {
+      document.getElementById('splash').style.display = 'none';
+    });
+  } else {
+    renderHome();
+    showPage('settings');
+    showToast('Pehli baar: Settings mein GitHub token daalo ⚙️', 'a');
+  }
+};
+
+// ══════════════════════════════════════════════════════════
+// NAVIGATION
+// ══════════════════════════════════════════════════════════
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.ni').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  const ni = document.getElementById('ni-' + name);
+  if (ni) ni.classList.add('active');
+}
+
+// ══════════════════════════════════════════════════════════
+// SETTINGS
+// ══════════════════════════════════════════════════════════
+const FIXED_OWNER = 'raakpk507-coder';
+const FIXED_REPO  = 'BHUMI-TEST';
+
+function getS() {
+  try {
+    const s = JSON.parse(localStorage.getItem('bhusmart_cfg') || '{}');
+    s.owner = FIXED_OWNER;
+    s.repo  = FIXED_REPO;
+    return s;
+  } catch { return { owner: FIXED_OWNER, repo: FIXED_REPO }; }
+}
+function loadSettingsUI() {
+  const s = getS();
+  document.getElementById('ghToken').value = s.token || '';
+}
+function saveSettings() {
+  localStorage.setItem('bhusmart_cfg', JSON.stringify({
+    token: document.getElementById('ghToken').value.trim(),
+    owner: FIXED_OWNER,
+    repo:  FIXED_REPO
+  }));
+  showToast('✅ Token saved!', 's');
+  // Auto load after saving token
+  const s = getS();
+  if (s.token) {
+    document.getElementById('splash').style.display = 'flex';
+    loadFromGithub().finally(() => {
+      document.getElementById('splash').style.display = 'none';
+    });
+  }
+}
+
+// ══════════════════════════════════════════════════════════
+// HOME RENDER
+// ══════════════════════════════════════════════════════════
+function renderHome() {
+  const el = document.getElementById('students-list');
+  const students = data.students || [];
+
+  // hero stats
+  let totalUsed = 0;
+  students.forEach(s => {
+    Object.values(s.classes || {}).forEach(cls => {
+      Object.values(cls.chapters || {}).forEach(ch => {
+        (ch.pages || []).forEach(pg => {
+          Object.values(pg.questions || {}).forEach(q => { if (q.used > 0) totalUsed++; });
+          Object.values(pg.examples  || {}).forEach(e => { if (e.used > 0) totalUsed++; });
+        });
+      });
+    });
+  });
+  document.getElementById('h-students').textContent = students.length;
+  document.getElementById('h-total-used').textContent = totalUsed;
+  document.getElementById('h-sessions').textContent = (data.history || []).length;
+
+  if (!students.length) {
+    el.innerHTML = `<div class="empty"><div class="empty-icon">👥</div><div class="empty-text">Koi student nahi.<br>＋ Student dabao add karne ke liye.</div></div>`;
+    return;
+  }
+
+  el.innerHTML = '';
+  students.forEach((stu, si) => {
+    const { total, used } = getStuStats(stu);
+    const pct = total > 0 ? Math.round(used / total * 100) : 0;
+    const classes = Object.keys(stu.classes || {});
+
+    const card = document.createElement('div');
+    card.className = 'stu-card';
+    card.style.animationDelay = si * 40 + 'ms';
+
+    let chHtml = '';
+    classes.forEach(cls => {
+      Object.keys(stu.classes[cls].chapters || {}).forEach(chName => {
+        const ch = stu.classes[cls].chapters[chName];
+        const { total: ct, used: cu } = getChStats(ch);
+        const cpct = ct > 0 ? Math.round(cu / ct * 100) : 0;
+        const hasUsed = cu > 0;
+        const allUsed = ct > 0 && cu === ct;
+        const dotCls = allUsed ? 'used' : hasUsed ? 'partial' : '';
+        const freshQs = ct - cu;
+        chHtml += `
+          <div class="ch-row" onclick="openChapter('${stu.id}','${esc(cls)}','${esc(chName)}')">
+            <div class="ch-dot ${dotCls}"></div>
+            <div class="ch-info">
+              <div class="ch-name">${esc(chName)}</div>
+              <div class="ch-meta">${esc(cls)} · ${(ch.pages||[]).length} pages · ${cu}/${ct} used</div>
+            </div>
+            <div class="ch-right">
+              ${freshQs > 0 ? `<span class="fresh-tag">${freshQs} fresh</span>` : `<span class="used-tag">all used</span>`}
+            </div>
+          </div>`;
+      });
+    });
+
+    card.innerHTML = `
+      <div class="stu-card-hdr" onclick="this.closest('.stu-card').classList.toggle('open')">
+        <div class="stu-left">
+          <div class="stu-avatar" style="background:${avatarBg(stu.emoji)}">${stu.emoji || '👦'}</div>
+          <div class="stu-info">
+            <div class="stu-name">${esc(stu.name)}</div>
+            <div class="stu-meta">${esc(stu.class || '')} · ${used}/${total} used</div>
+          </div>
+        </div>
+        <div class="stu-right">
+          <div class="stu-pct">${pct}%</div>
+          <div class="mini-bar"><div class="mini-fill" style="width:${pct}%"></div></div>
+        </div>
+      </div>
+      <div class="stu-chapters">
+        ${chHtml}
+        <div class="add-ch-row" onclick="openModal('addClass','${stu.id}')">＋ Add Class / Chapter</div>
+      </div>`;
+    el.appendChild(card);
+  });
+}
+
+function getStuStats(stu) {
+  let total = 0, used = 0;
+  Object.values(stu.classes || {}).forEach(cls => {
+    Object.values(cls.chapters || {}).forEach(ch => {
+      const s = getChStats(ch);
+      total += s.total; used += s.used;
+    });
+  });
+  return { total, used };
+}
+function getChStats(ch) {
+  let total = 0, used = 0;
+  (ch.pages || []).forEach(pg => {
+    Object.values(pg.questions || {}).forEach(q => { total++; if (q.used > 0) used++; });
+    Object.values(pg.examples  || {}).forEach(e => { total++; if (e.used > 0) used++; });
+  });
+  return { total, used };
+}
+function avatarBg(e) {
+  const cs = ['rgba(34,197,94,.12)','rgba(59,130,246,.12)','rgba(245,158,11,.12)','rgba(239,68,68,.12)','rgba(6,182,212,.12)'];
+  return cs[(e || '').charCodeAt(0) % cs.length] || cs[0];
+}
+
+// ══════════════════════════════════════════════════════════
+// CHAPTER VIEW (original tracker functionality)
+// ══════════════════════════════════════════════════════════
+function openChapter(stuId, cls, chName) {
+  activeStuId = stuId; activeClass = cls; activeChapter = chName; activePage = null; selQ = {};
+  document.getElementById('chTopName').textContent = chName;
+  document.getElementById('chTopSub').textContent = cls + ' · ' + (getStu(stuId)?.name || '');
+  renderPageTabs();
+  document.getElementById('chImgArea').innerHTML = `<div class="img-loading"><div class="img-loading-icon">📄</div><div style="font-size:.73rem;">Page tab select karo</div></div>`;
+  document.getElementById('qPanelInfo').textContent = '—';
+  document.getElementById('editArea').style.display = 'none';
+  document.getElementById('selSummary').textContent = 'Koi select nahi';
+  showPage('chapter');
+  const ch = getChData();
+  if ((ch?.pages || []).length > 0) switchPage(1);
+}
+
+function getStu(id) { return data.students.find(s => s.id === id); }
+function getChData() {
+  return getStu(activeStuId)?.classes?.[activeClass]?.chapters?.[activeChapter];
+}
+
+function renderPageTabs() {
+  const ch = getChData();
+  const tabs = document.getElementById('pageTabs');
+  tabs.innerHTML = '';
+  (ch?.pages || []).forEach((pg, i) => {
+    const pn = i + 1;
+    const usedCount = Object.values(pg.questions || {}).filter(q => q.used > 0).length
+                    + Object.values(pg.examples  || {}).filter(e => e.used > 0).length;
+    const btn = document.createElement('button');
+    btn.className = `ptab${activePage === pn ? ' active' : ''}${usedCount > 0 ? ' has-used' : ''}`;
+    btn.textContent = `P${pn}`;
+    btn.onclick = () => switchPage(pn);
+    tabs.appendChild(btn);
+  });
+}
+
+function switchPage(pn) {
+  activePage = pn;
+  renderPageTabs();
+  // Load image
+  const s = getS();
+  const ch = getChData();
+  const pg = ch?.pages?.[pn - 1];
+  const url = buildImgUrl(ch, pn);
+  const area = document.getElementById('chImgArea');
+  if (url) {
+    area.innerHTML = `<div class="img-loading"><div class="img-loading-icon">📄</div><div style="font-size:.73rem;">Loading...</div></div>`;
+    const img = new Image();
+    img.onload  = () => { area.innerHTML = ''; area.appendChild(img); img.style.width = '100%'; img.style.borderRadius = '8px'; };
+    img.onerror = () => { area.innerHTML = `<div class="img-error"><div class="img-error-icon" style="font-size:1.8rem;opacity:.3;">📄</div><div style="font-size:.73rem;margin-top:8px;">Image load nahi hua</div><div class="img-error-path">${url.replace('https://raw.githubusercontent.com/','')}</div></div>`; };
+    img.src = url;
+  } else {
+    area.innerHTML = `<div class="img-error"><div class="img-error-icon" style="font-size:1.8rem;opacity:.3;">⚙️</div><div style="font-size:.73rem;margin-top:8px;">Image URL nahi bana — folder/prefix check karo</div></div>`;
+  }
+  renderQPanel(pn);
+}
+
+function buildImgUrl(ch, pn) {
+  const s = getS();
+  if (!s.owner || !s.repo || !ch) return null;
+  const folder = ch.folder || '';
+  const prefix = ch.prefix || '';
+  if (!folder) return null;
+  return `https://raw.githubusercontent.com/${s.owner}/${s.repo}/main/${folder}/${prefix}_p${pn}.png`;
+}
+
+function renderQPanel(pn) {
+  const ch = getChData();
+  const pg = ch?.pages?.[pn - 1];
+  if (!pg) return;
+  const qNums  = Object.keys(pg.questions || {}).map(Number).sort((a,b)=>a-b);
+  const exNums = Object.keys(pg.examples  || {}).map(Number).sort((a,b)=>a-b);
+  const sel = selQ[pn] || [];
+  document.getElementById('qPanelInfo').innerHTML = `<b>P${pn}</b> · Q: ${qNums.length} · Ex: ${exNums.length}`;
+
+  // Q grid
+  if (qNums.length) {
+    let html = '';
+    qNums.forEach(n => {
+      const q = pg.questions[String(n)];
+      const isUsed = q.used > 0;
+      const isSel  = sel.includes('q' + n);
+      const isWrong = q.wrong && q.wrong.count > 0;
+      const isDue   = isWrong && q.wrong.nextReview && q.wrong.nextReview <= todayStr();
+      const chipCls = isSel ? 'selected' : isDue ? 'wrong-due' : isWrong ? 'wrong' : isUsed ? 'used' : 'fresh';
+      const dateStr = q.lastDate ? fmtD(q.lastDate) : '';
+      const badge   = isDue ? `<div class="due-badge">DUE</div>` : isWrong ? `<div class="wrong-badge">${q.wrong.count}✗</div>` : '';
+      html += `<div class="q-chip ${chipCls}" onclick="toggleItem(${pn},'q',${n})">
+        <div class="qnum">Q${n}</div>
+        <div class="qdate">${dateStr}</div>
+        ${badge}
+      </div>`;
+    });
+    document.getElementById('qGrid').innerHTML = html;
+    document.getElementById('qTray').style.display = 'block';
+  } else {
+    document.getElementById('qTray').style.display = 'none';
+  }
+
+  // Ex grid
+  if (exNums.length) {
+    let html = '';
+    exNums.forEach(n => {
+      const e = pg.examples[String(n)];
+      const isUsed = e.used > 0;
+      const isSel  = sel.includes('ex' + n);
+      const isWrong = e.wrong && e.wrong.count > 0;
+      const isDue   = isWrong && e.wrong.nextReview && e.wrong.nextReview <= todayStr();
+      const chipCls = isSel ? 'selected' : isDue ? 'wrong-due' : isWrong ? 'wrong' : isUsed ? 'used' : 'fresh';
+      const dateStr = e.lastDate ? fmtD(e.lastDate) : '';
+      const badge   = isDue ? `<div class="due-badge">DUE</div>` : isWrong ? `<div class="wrong-badge">${e.wrong.count}✗</div>` : '';
+      html += `<div class="q-chip ${chipCls}" onclick="toggleItem(${pn},'ex',${n})">
+        <div class="qnum">E${n}</div>
+        <div class="qdate">${dateStr}</div>
+        ${badge}
+      </div>`;
+    });
+    document.getElementById('exGrid').innerHTML = html;
+    document.getElementById('exTray').style.display = 'block';
+  } else {
+    document.getElementById('exTray').style.display = 'none';
+  }
+
+  document.getElementById('emptyTray').style.display = (qNums.length || exNums.length) ? 'none' : 'block';
+  updateSelSummary();
+}
+
+function toggleEdit() {
+  const ea = document.getElementById('editArea');
+  ea.style.display = ea.style.display === 'none' ? 'block' : 'none';
+}
+function confirmEdit() {
+  const ch = getChData();
+  if (!ch || !activePage) return;
+  const pg = ch.pages[activePage - 1];
+  // Parse Q input e.g. "1,3,5-8"
+  const parseNums = (str) => {
+    const nums = new Set();
+    str.split(',').forEach(part => {
+      part = part.trim();
+      if (part.includes('-')) {
+        const [a, b] = part.split('-').map(Number);
+        for (let i = a; i <= b; i++) nums.add(i);
+      } else if (part) nums.add(parseInt(part));
+    });
+    return [...nums].filter(n => !isNaN(n) && n > 0);
+  };
+  const qNums  = parseNums(document.getElementById('qInp').value);
+  const exNums = parseNums(document.getElementById('exInp').value);
+  qNums.forEach(n  => { if (!pg.questions[n]) pg.questions[n] = { used: 0, lastDate: null }; pg.total = Object.keys(pg.questions).length; });
+  exNums.forEach(n => { if (!pg.examples[n])  pg.examples[n]  = { used: 0, lastDate: null }; pg.exTotal = Object.keys(pg.examples).length; });
+  document.getElementById('editArea').style.display = 'none';
+  document.getElementById('qInp').value = '';
+  document.getElementById('exInp').value = '';
+  renderQPanel(activePage);
+  showToast('Questions add ho gaye!', 's');
+}
+
+function toggleItem(pn, type, num) {
+  if (!selQ[pn]) selQ[pn] = [];
+  const key = type + num;
+  const idx = selQ[pn].indexOf(key);
+  if (idx === -1) selQ[pn].push(key);
+  else selQ[pn].splice(idx, 1);
+  renderQPanel(pn);
+}
+function clearSel() { selQ = {}; if (activePage) renderQPanel(activePage); }
+function updateSelSummary() {
+  const keys = Object.keys(selQ).filter(k => selQ[k].length > 0);
+  const el = document.getElementById('selSummary');
+  if (!keys.length) { el.innerHTML = 'Koi select nahi'; return; }
+  el.innerHTML = keys.map(k => {
+    const qs  = selQ[k].filter(x => x.startsWith('q')).map(x  => 'Q' + x.slice(1)).join(', ');
+    const exs = selQ[k].filter(x => x.startsWith('ex')).map(x => 'Ex' + x.slice(2)).join(', ');
+    const parts = [];
+    if (qs)  parts.push(`<b>${qs}</b>`);
+    if (exs) parts.push(`<b class="ex">${exs}</b>`);
+    return `P${k}: ${parts.join(' · ')}`;
+  }).join(' | ');
+}
+
+// ══════════════════════════════════════════════════════════
+// DOWNLOAD + MARK (original functionality)
+// ══════════════════════════════════════════════════════════
+async function downloadAndMark() {
+  const keys = Object.keys(selQ).filter(k => selQ[k].length > 0);
+  if (!keys.length) { showToast('Pehle questions select karo', 'e'); return; }
+  const s = getS();
+  const today = todayStr();
+  const chData = getChData();
+  const chData2 = getChData();
+  const prefix = chData2?.prefix || activeChapter.replace(/\s+/g,'_').replace(/[^a-zA-Z0-9_]/g,'').toLowerCase().slice(0,12);
+  showOverlay('Downloading...', 0);
+  const hist = { date: today, datetime: new Date().toLocaleString('en-IN'), studentName: getStu(activeStuId)?.name, className: activeClass, chapter: activeChapter, pages: [] };
+
+  for (let ki = 0; ki < keys.length; ki++) {
+    const k = keys[ki];
+    const pn = parseInt(k);
+    const items = selQ[k];
+    const qNums  = items.filter(x => x.startsWith('q')).map(x  => parseInt(x.slice(1))).sort((a,b)=>a-b);
+    const exNums = items.filter(x => x.startsWith('ex')).map(x => parseInt(x.slice(2))).sort((a,b)=>a-b);
+    // Same structure as old app: prefix_pN_qX_qY_exA_exB.png
+    let nameParts = [`${prefix}_p${pn}`];
+    if (qNums.length)  nameParts.push(qNums.map(q => `q${q}`).join('_'));
+    if (exNums.length) nameParts.push(exNums.map(e => `ex${e}`).join('_'));
+    const fname = nameParts.join('_') + '.png';
+    hist.pages.push({ pageNum: pn, qNums, exNums, fname });
+    updateOverlay(fname, ki / keys.length * 100);
+
+    const url = buildImgUrl(chData, pn);
+    if (url) {
+      try {
+        const res = await fetch(url);
+        if (res.ok) {
+          const blob = await res.blob();
+          const img = new Image();
+          const bu = URL.createObjectURL(blob);
+          await new Promise(r => { img.onload = r; img.src = bu; });
+          const c = document.createElement('canvas');
+          c.width = img.width; c.height = img.height;
+          c.getContext('2d').drawImage(img, 0, 0);
+          c.toBlob(ob => { const a = document.createElement('a'); a.href = URL.createObjectURL(ob); a.download = fname; a.click(); }, 'image/png');
+          await new Promise(r => setTimeout(r, 500));
+        }
+      } catch(e) {}
+    }
+
+    // Mark used — string keys zaroori hain
+    const pg = chData.pages[pn - 1];
+    qNums.forEach(q  => { const k=String(q); if (!pg.questions[k]) pg.questions[k] = { used:0, lastDate:null }; pg.questions[k].used++; pg.questions[k].lastDate = today; });
+    exNums.forEach(e => { const k=String(e); if (!pg.examples[k])  pg.examples[k]  = { used:0, lastDate:null }; pg.examples[k].used++;  pg.examples[k].lastDate  = today; });
+  }
+
+  if (!data.history) data.history = [];
+  data.history.unshift(hist);
+  selQ = {};
+  renderQPanel(activePage);
+  renderPageTabs();
+  renderHome();
+  hideOverlay();
+  showToast('✓ Done! Marked used', 's');
+  saveToGithub();
+}
+
+// ══════════════════════════════════════════════════════════
+// SMART PAPER GENERATOR
+// ══════════════════════════════════════════════════════════
+function renderPaperStuSelector() {
+  const el = document.getElementById('paperStuSelector');
+  el.innerHTML = '';
+  const students = data.students || [];
+  if (!students.length) { el.innerHTML = '<span style="font-size:.72rem;color:var(--t2);">Home se student add karo pehle</span>'; return; }
+  students.forEach(stu => {
+    const btn = document.createElement('button');
+    btn.className = `stu-sel-btn${paperStuId === stu.id ? ' active' : ''}`;
+    btn.innerHTML = `${stu.emoji || '👦'} ${esc(stu.name)}`;
+    btn.onclick = () => { paperStuId = stu.id; renderPaperStuSelector(); renderChDistEditor(); };
+    el.appendChild(btn);
+  });
+  if (!paperStuId && students.length) paperStuId = students[0].id;
+  renderChDistEditor();
+}
+
+// chDist = { chKey: count } — manual overrides
+let chDist = {};
+
+function getChKey(cls, chName) { return `${cls}||${chName}`; }
+
+function renderChDistEditor() {
+  const el = document.getElementById('ch-dist-editor');
+  if (!el) return;
+  const stu = getStu(paperStuId);
+  if (!stu) { el.innerHTML = ''; return; }
+  const mode = document.getElementById('paperMode')?.value;
+  const isCustom = mode === 'custom';
+
+  const rawQ = document.getElementById('paperQ')?.value;
+  const Q = parseInt(rawQ) || 0;
+  const autoQs = calcAutoChDist(stu, Q);
+
+  el.innerHTML = '';
+  let totalAssigned = 0;
+  let chNum = 0;
+
+  Object.keys(stu.classes || {}).forEach(cls => {
+    Object.keys(stu.classes[cls].chapters || {}).forEach(chName => {
+      chNum++;
+      const ch = stu.classes[cls].chapters[chName];
+      const key = getChKey(cls, chName);
+      const { total: avail, used } = getChStats(ch);
+      const fresh = avail - used;
+      const autoQ = autoQs[key] || 0;
+      const manualQ = chDist[key] !== undefined ? chDist[key] : autoQ;
+      totalAssigned += manualQ;
+      const isOver = manualQ > avail;
+
+      const row = document.createElement('div');
+      row.className = `ch-dist-row${isOver ? ' over-avail' : ''}`;
+
+      const dotColor = fresh === 0 ? 'var(--red)' : fresh < 3 ? 'var(--amber)' : 'var(--green)';
+
+      row.innerHTML = `
+        <div style="font-family:var(--mono);font-size:.7rem;font-weight:700;color:var(--cyan);min-width:28px;flex-shrink:0;">Ch${chNum}</div>
+        <div class="cdr-dot" style="background:${dotColor}"></div>
+        <div class="cdr-info">
+          <div class="cdr-name">${esc(chName)}</div>
+          <div class="cdr-avail">${fresh} fresh · ${avail} total${isOver ? ' · <span style="color:var(--red)">⚠ not enough</span>' : ''}</div>
+        </div>
+        <div class="cdr-stepper">
+          <button class="cdr-btn" onclick="stepChDist('${esc(key)}',-1)">−</button>
+          <input class="cdr-num-inp" type="number" min="0" max="${avail}" value="${manualQ}"
+            onchange="setChDist('${esc(key)}',parseInt(this.value)||0)"
+            oninput="setChDist('${esc(key)}',parseInt(this.value)||0)">
+          <button class="cdr-btn" onclick="stepChDist('${esc(key)}',+1)">＋</button>
+        </div>`;
+      el.appendChild(row);
+    });
+  });
+
+  updateDistBadge(totalAssigned, Q);
+}
+
+function calcAutoChDist(stu, Q) {
+  // Same weight algorithm as generatePaper
+  const chapters = [];
+  Object.keys(stu.classes || {}).forEach(cls => {
+    Object.keys(stu.classes[cls].chapters || {}).forEach(chName => {
+      chapters.push({ cls, chName });
+    });
+  });
+  if (!chapters.length) return {};
+  const C = chapters.length;
+  const w = chapters.map((_, idx) => 1 / (C - idx));
+  const sum = w.reduce((a,b)=>a+b,0);
+  const nw = w.map(x=>x/sum);
+  let qs = nw.map(w => Math.round(w * Q));
+  let diff = Q - qs.reduce((a,b)=>a+b,0);
+  if (diff !== 0) {
+    const fracs = nw.map((w,i)=>({i,f:(w*Q)%1}));
+    fracs.sort((a,b)=>diff>0?b.f-a.f:a.f-b.f);
+    for (let k=0;k<Math.abs(diff);k++){qs[fracs[k].i]+=diff>0?1:-1;if(qs[fracs[k].i]<0)qs[fracs[k].i]=0;}
+  }
+  const result = {};
+  chapters.forEach((ch,i)=>{ result[getChKey(ch.cls,ch.chName)] = qs[i]; });
+  return result;
+}
+
+function stepChDist(key, delta) {
+  const stu = getStu(paperStuId);
+  const Q = parseInt(document.getElementById('paperQ')?.value) || 0;
+  const autoQs = calcAutoChDist(stu, Q);
+  const current = chDist[key] !== undefined ? chDist[key] : (autoQs[key] || 0);
+  const newVal = Math.max(0, current + delta);
+  chDist[key] = newVal;
+  renderChDistEditor();
+}
+
+function setChDist(key, val) {
+  chDist[key] = Math.max(0, val || 0);
+  updateDistBadge();
+}
+
+function updateDistBadge() {
+  const rawQ = document.getElementById('paperQ')?.value;
+  const Q = parseInt(rawQ) || 0;
+  const stu = getStu(paperStuId);
+  if (!stu) return;
+  const autoQs = calcAutoChDist(stu, Q);
+  let total = 0;
+  Object.keys(stu.classes || {}).forEach(cls => {
+    Object.keys(stu.classes[cls].chapters || {}).forEach(chName => {
+      const key = getChKey(cls, chName);
+      total += chDist[key] !== undefined ? chDist[key] : (autoQs[key] || 0);
+    });
+  });
+  const badge = document.getElementById('dist-total-badge');
+  if (!badge) return;
+  badge.textContent = `${total}/${Q}`;
+  badge.style.background = total === Q ? 'var(--gdim)' : total > Q ? 'var(--rdim)' : 'var(--adim)';
+  badge.style.color = total === Q ? 'var(--green)' : total > Q ? 'var(--red)' : 'var(--amber)';
+}
+
+function updateChDist() {
+  chDist = {}; // reset on total Q change
+  renderChDistEditor();
+}
+
+function resetChDist() {
+  chDist = {};
+  renderChDistEditor();
+  showToast('Auto distribution reset', 'a');
+}
+
+function onModeChange() {
+  const mode = document.getElementById('paperMode').value;
+  const chDistSection   = document.getElementById('chDistSection');
+  const modeHintSection = document.getElementById('modeHintSection');
+
+  const specialModes = ['only_wrong', 'only_due', 'important'];
+  if (specialModes.includes(mode)) {
+    chDistSection.style.display = 'none';
+    modeHintSection.style.display = 'block';
+    const hints = {
+      only_wrong: '✗ <b style="color:var(--red)">Only Wrong:</b> Sirf wo questions jo history mein kabhi galat hue — sabhi chapters se. Total Q se limit hoga.',
+      only_due:   '🔴 <b style="color:var(--red)">Only Hard:</b> Sirf "Hard" mark kiye hue questions — jo sabse zyada mushkil the. Total Q se limit hoga.',
+      important:  '⭐ <b style="color:var(--cyan)">Important:</b> Medium + Hard mark kiye questions. Worst first order mein aayenge.',
+    };
+    modeHintSection.innerHTML = hints[mode] || '';
+  } else if (mode === 'all_equal') {
+    chDistSection.style.display = 'none';
+    modeHintSection.style.display = 'block';
+    modeHintSection.innerHTML = '📊 <b style="color:var(--green)">All Chapters Equal:</b> Total Q ko sabhi chapters mein barabar baant diya jaayega. Har chapter se same count.';
+  } else if (mode === 'custom') {
+    chDistSection.style.display = 'block';
+    modeHintSection.style.display = 'block';
+    modeHintSection.innerHTML = '🎛 <b style="color:var(--cyan)">Custom:</b> Neeche Ch 1, Ch 2... se chapters identify karo aur manually Q count set karo.';
+    renderChDistEditor(); // re-render with numbers visible
+  } else {
+    chDistSection.style.display = 'block';
+    modeHintSection.style.display = 'none';
+  }
+}
+
+function generatePaper() {
+  if (!paperStuId) { showToast('Student select karo', 'e'); return; }
+  const stu = getStu(paperStuId);
+  if (!stu) return;
+  const mode = document.getElementById('paperMode').value;
+  const rawQ = document.getElementById('paperQ').value;
+
+  // Special modes: only_wrong, only_due, important — don't need Q for all
+  const specialModes = ['only_wrong', 'only_due', 'important'];
+  let Q = 0;
+  if (mode !== 'only_due') {
+    if (!rawQ || rawQ.trim() === '') { showToast('⚠ Total Questions likho!', 'e'); document.getElementById('paperQ').focus(); return; }
+    Q = parseInt(rawQ) || 0;
+    if (Q < 1) { showToast('⚠ Kam se kam 1 question chahiye!', 'e'); return; }
+  }
+
+  // ── SPECIAL MODE: Only Wrong ──
+  if (mode === 'only_wrong') {
+    const pool = buildWrongPool(stu, false);
+    if (!pool.length) { showToast('Koi wrong questions nahi hain! History mein mark karo.', 'e'); return; }
+    pool.sort((a, b) => { const d = {hard:0,medium:1,easy:2}; return (d[a.difficulty]??3)-(d[b.difficulty]??3); });
+    const picked = pool.slice(0, Q);
+    currentPaper = buildPaperFromFlat(picked, stu);
+    renderPaperOutput();
+    document.getElementById('nb-paper').classList.add('show');
+    return;
+  }
+
+  // ── SPECIAL MODE: Only Hard ──
+  if (mode === 'only_due') {
+    const pool = buildWrongPool(stu, true); // true = only hard
+    if (!pool.length) { showToast('Koi Hard marked question nahi! History mein mark karo.', 'e'); return; }
+    currentPaper = buildPaperFromFlat(pool.slice(0, Q), stu);
+    renderPaperOutput();
+    document.getElementById('nb-paper').classList.add('show');
+    return;
+  }
+
+  // ── SPECIAL MODE: Important (medium + hard) ──
+  if (mode === 'important') {
+    const pool = buildWrongPool(stu, false).filter(i => i.difficulty === 'medium' || i.difficulty === 'hard');
+    if (!pool.length) { showToast('Koi medium/hard question nahi! History mein mark karo.', 'e'); return; }
+    pool.sort((a, b) => { const d = {hard:0,medium:1}; return (d[a.difficulty]??2)-(d[b.difficulty]??2); });
+    const picked = pool.slice(0, Q);
+    currentPaper = buildPaperFromFlat(picked, stu);
+    renderPaperOutput();
+    document.getElementById('nb-paper').classList.add('show');
+    return;
+  }
+
+  // ── SPECIAL MODE: All Chapters Equal ──
+  if (mode === 'all_equal') {
+    const chapters = [];
+    Object.keys(stu.classes || {}).forEach(cls => {
+      Object.keys(stu.classes[cls].chapters || {}).forEach(chName => {
+        chapters.push({ cls, chName, ch: stu.classes[cls].chapters[chName] });
+      });
+    });
+    if (!chapters.length) { showToast('Koi chapters nahi hain!', 'e'); return; }
+    const perCh = Math.floor(Q / chapters.length);
+    const remainder = Q % chapters.length;
+    const groups = {};
+    chapters.forEach((c, ci) => {
+      const wantCount = perCh + (ci < remainder ? 1 : 0);
+      if (!wantCount) return;
+      const pool = [];
+      (c.ch.pages || []).forEach((pg, pi) => {
+        const pn = pi + 1;
+        Object.keys(pg.questions || {}).forEach(n => {
+          const q = pg.questions[n]; const num = parseInt(n);
+          pool.push({ cls:c.cls, chName:c.chName, ch:c.ch, pn, type:'q', num, used:q.used||0, lastDate:q.lastDate||null, loc:`Q${num}`, key:`q${num}_p${pn}` });
+        });
+        Object.keys(pg.examples || {}).forEach(n => {
+          const e = pg.examples[n]; const num = parseInt(n);
+          pool.push({ cls:c.cls, chName:c.chName, ch:c.ch, pn, type:'ex', num, used:e.used||0, lastDate:e.lastDate||null, loc:`Example ${num}`, key:`ex${num}_p${pn}` });
+        });
+      });
+      if (!pool.length) return;
+      // Fresh first
+      pool.sort((a,b) => (a.used*1000-(a.lastDate?Math.floor((Date.now()-new Date(a.lastDate))/86400000):9999)) - (b.used*1000-(b.lastDate?Math.floor((Date.now()-new Date(b.lastDate))/86400000):9999)));
+      const picked = [];
+      for (let i = 0; i < wantCount; i++) picked.push(pool[i % pool.length]);
+      groups[getChKey(c.cls, c.chName)] = { cls:c.cls, chName:c.chName, ch:c.ch, items: picked };
+    });
+    if (!Object.keys(groups).length) { showToast('Koi questions nahi hain!', 'e'); return; }
+    let cursor = 1;
+    const blocks = Object.values(groups).map(g => {
+      const count = g.items.length; const start = cursor; const end = cursor + count - 1;
+      cursor = end + 1;
+      return { ...g, start, end, count };
+    });
+    currentPaper = { stuId: paperStuId, stuName: stu.name, date: todayStr(), totalQ: blocks.reduce((s,b)=>s+b.count,0), blocks };
+    renderPaperOutput();
+    document.getElementById('nb-paper').classList.add('show');
+    return;
+  }
+  const autoQs = calcAutoChDist(stu, Q);
+  const score = (item) => {
+    const daysSince = item.lastDate ? Math.floor((Date.now() - new Date(item.lastDate).getTime()) / 86400000) : 9999;
+    if (mode === 'fresh')  return item.used * 1000 - daysSince;
+    if (mode === 'weak')   return item.used * 500  - daysSince;
+    return item.used * 800 - daysSince; // balanced / custom
+  };
+
+  const groups = {};
+  let anyQ = false;
+
+  Object.keys(stu.classes || {}).forEach(cls => {
+    Object.keys(stu.classes[cls].chapters || {}).forEach(chName => {
+      const ch = stu.classes[cls].chapters[chName];
+      const key = getChKey(cls, chName);
+      const wantCount = chDist[key] !== undefined ? chDist[key] : (autoQs[key] || 0);
+      if (!wantCount) return;
+      const pool = [];
+      (ch.pages || []).forEach((pg, pi) => {
+        const pn = pi + 1;
+        Object.keys(pg.questions || {}).forEach(n => {
+          const q = pg.questions[n];
+          const num = parseInt(n);
+          pool.push({ cls, chName, ch, pn, type:'q', num, used: q.used||0, lastDate: q.lastDate||null, loc:`Q${num}`, key:`q${num}_p${pn}` });
+        });
+        Object.keys(pg.examples || {}).forEach(n => {
+          const e = pg.examples[n];
+          const num = parseInt(n);
+          pool.push({ cls, chName, ch, pn, type:'ex', num, used: e.used||0, lastDate: e.lastDate||null, loc:`Example ${num}`, key:`ex${num}_p${pn}` });
+        });
+      });
+      if (!pool.length) return;
+      anyQ = true;
+      const sorted = [...pool].sort((a,b) => score(a) - score(b));
+      const picked = [];
+      for (let i = 0; i < wantCount; i++) picked.push(sorted[i % sorted.length]);
+      groups[key] = { cls, chName, ch, items: picked };
+    });
+  });
+
+  if (!anyQ) { showToast('Koi questions nahi hain — chapter mein Q/Ex add karo', 'e'); return; }
+
+  let cursor = 1;
+  const blocks = Object.values(groups).map(g => {
+    const count = g.items.length;
+    const start = cursor, end = cursor + count - 1;
+    cursor = end + 1;
+    return { ...g, start, end, count };
+  });
+
+  const totalQ = blocks.reduce((s,b) => s + b.count, 0);
+  currentPaper = { stuId: paperStuId, stuName: stu.name, date: todayStr(), totalQ, blocks };
+  renderPaperOutput();
+  document.getElementById('nb-paper').classList.add('show');
+}
+
+// Build flat wrong question pool for a student — reads from history snapshots
+function buildWrongPool(stu, onlyHard) {
+  const seen = new Set();
+  const pool = [];
+  (data.history || []).forEach(h => {
+    if (h.stuId !== stu.id) return;
+    (h.snapshot || []).forEach(item => {
+      if (!item.wrong) return;
+      if (onlyHard && item.wrong.difficulty !== 'hard') return;
+      const key = `${item.type}${item.num}_p${item.pn}_${item.chName}`;
+      if (seen.has(key)) return; // deduplicate
+      seen.add(key);
+      const ch = stu.classes?.[item.cls]?.chapters?.[item.chName];
+      if (!ch) return;
+      const pg = ch.pages?.[item.pn - 1];
+      const qData = pg ? (item.type === 'q' ? pg.questions?.[String(item.num)] : pg.examples?.[String(item.num)]) : null;
+      pool.push({
+        cls: item.cls, chName: item.chName, ch, pn: item.pn,
+        type: item.type, num: item.num,
+        used: qData?.used || 0, lastDate: qData?.lastDate || null,
+        loc: item.loc || ((item.type === 'q' ? 'Q' : 'Ex') + item.num),
+        key,
+        wrongCount: 1,
+        difficulty: item.wrong.difficulty
+      });
+    });
+  });
+  return pool;
+}
+
+// Build currentPaper structure from flat item list (for special modes)
+function buildPaperFromFlat(items, stu) {
+  // Group by chapter
+  const chMap = {};
+  items.forEach(item => {
+    const key = getChKey(item.cls, item.chName);
+    if (!chMap[key]) chMap[key] = { cls: item.cls, chName: item.chName, ch: item.ch, items: [] };
+    chMap[key].items.push(item);
+  });
+  let cursor = 1;
+  const blocks = Object.values(chMap).map(g => {
+    const count = g.items.length;
+    const start = cursor, end = cursor + count - 1;
+    cursor = end + 1;
+    return { ...g, start, end, count };
+  });
+  return { stuId: stu.id, stuName: stu.name, date: todayStr(), totalQ: items.length, blocks };
+}
+
+function renderPaperOutput() {
+  if (!currentPaper) return;
+  const p = currentPaper;
+  const stu = getStu(p.stuId);
+
+  const freshCount = p.blocks.reduce((s, b) => s + b.items.filter(i => !i.used).length, 0);
+  const usedCount  = p.blocks.reduce((s, b) => s + b.items.filter(i =>  i.used).length, 0);
+
+  const content = document.getElementById('paperContent');
+  content.innerHTML = '';
+
+  const wrap = document.createElement('div');
+  wrap.className = 'gen-paper-wrap';
+  wrap.id = 'printable-paper';
+
+  // Header
+  wrap.innerHTML = `
+    <div class="gp-header">
+      <div class="gp-title">📄 ${esc(stu?.name || '')}'s Paper — ${p.date}</div>
+      <div class="gp-meta">${p.totalQ} Questions · ${p.blocks.length} Chapters</div>
+      <div class="gp-chips">
+        <span class="gp-chip fresh">🟢 ${freshCount} Fresh</span>
+        <span class="gp-chip">${usedCount} Repeated</span>
+        <span class="gp-chip">${p.blocks.length} Chapters</span>
+      </div>
+    </div>`;
+
+  // Sections
+  p.blocks.forEach((blk, bi) => {
+    const { total: ct, used: cu } = getChStats(blk.ch);
+    const freshInCh = ct - cu;
+    const isAllUsed = freshInCh === 0;
+
+    const sec = document.createElement('div');
+    sec.className = 'gp-section';
+
+    const rangeStr = blk.start === blk.end ? `Q${blk.start}` : `Q${blk.start}–Q${blk.end}`;
+
+    // Unique pages needed
+    const pages = [...new Set(blk.items.map(i => i.pn))].sort((a,b)=>a-b);
+    const s = getS();
+
+    // Thumbnails HTML
+    let thumbHtml = '';
+    if (s.owner && s.repo) {
+      thumbHtml = `<div class="thumb-strip">`;
+      pages.forEach(pn => {
+        const url = buildImgUrl(blk.ch, pn);
+        if (url) thumbHtml += `<img class="thumb-img" src="${url}" alt="P${pn}" onerror="this.style.display='none'" onclick="openImgFs('${url}','${esc(blk.chName)} P${pn}')">`;
+        else thumbHtml += `<div class="thumb-placeholder">P${pn}<br>No URL</div>`;
+      });
+      thumbHtml += `</div>`;
+    }
+
+    // Q rows
+    let qHtml = '';
+    blk.items.forEach((item, qi) => {
+      const qNum = blk.start + qi;
+      const isFresh = !item.used;
+      const typeTag = item.type === 'ex'
+        ? `<span class="type-ex">EX</span>`
+        : `<span class="type-exr">Q</span>`;
+      const dot = isFresh
+        ? `<div class="fresh-dot" title="Fresh"></div>`
+        : `<div class="used-dot" title="Used ${item.used}x"></div>`;
+      qHtml += `<div class="gp-q-row" id="qrow-${bi}-${qi}">
+        <span class="gp-q-num">Q${qNum}.</span>
+        <span class="gp-q-loc">${esc(item.loc)}</span>
+        <span class="gp-q-page">P${item.pn}</span>
+        ${typeTag}
+        ${dot}
+        <div class="q-actions-wrap" id="qact-${bi}-${qi}">
+          <button class="q-act-btn q-act-toggle" onclick="toggleQActions(${bi},${qi})" title="Options">⋯</button>
+          <div class="q-act-popup" id="qpop-${bi}-${qi}" style="display:none;">
+            <button class="q-act-opt remove-opt" onclick="removeQuestion(${bi},${qi})">✕ Remove</button>
+            <button class="q-act-opt replace-opt" onclick="replaceQuestion(${bi},${qi})">↺ Replace</button>
+          </div>
+        </div>
+      </div>`;
+    });
+
+    sec.innerHTML = `
+      <div class="gp-sec-head${isAllUsed ? ' weak-sec' : ''}" onclick="toggleSec(${bi})">
+        <div class="gp-sec-left">
+          <span class="gp-range">${rangeStr}</span>
+          <div>
+            <div class="gp-ch-name">${esc(blk.chName)} ${isAllUsed ? '⚠' : ''}</div>
+          </div>
+        </div>
+        <div class="gp-right">
+          ${isAllUsed ? `<span class="diff-pill dp-w">All Used</span>` : `<span class="diff-pill dp-s">${freshInCh} fresh</span>`}
+          <span class="gp-chev open" id="gchev-${bi}">▾</span>
+        </div>
+      </div>
+      <div class="gp-sec-body open" id="gsec-${bi}">
+        ${thumbHtml}
+        ${qHtml}
+      </div>`;
+    wrap.appendChild(sec);
+  });
+
+  content.appendChild(wrap);
+  document.getElementById('paperOutput').style.display = 'block';
+}
+
+// ── Q REMOVE / REPLACE ──────────────────────────────────
+function toggleQActions(bi, qi) {
+  // Close all other popups first
+  document.querySelectorAll('.q-act-popup').forEach(p => {
+    if (p.id !== `qpop-${bi}-${qi}`) p.style.display = 'none';
+  });
+  const pop = document.getElementById(`qpop-${bi}-${qi}`);
+  if (pop) pop.style.display = pop.style.display === 'none' ? 'flex' : 'none';
+}
+
+// Close popups when tapping outside
+document.addEventListener('click', e => {
+  if (!e.target.closest('.q-actions-wrap')) {
+    document.querySelectorAll('.q-act-popup').forEach(p => p.style.display = 'none');
+  }
+});
+
+function removeQuestion(bi, qi) {
+  if (!currentPaper) return;
+  const blk = currentPaper.blocks[bi];
+  // Remove from items
+  blk.items.splice(qi, 1);
+  blk.count = blk.items.length;
+  // Recalculate start/end for all blocks
+  recalcBlockRanges();
+  renderPaperOutput();
+  showToast('Question removed', 'a');
+}
+
+function replaceQuestion(bi, qi) {
+  if (!currentPaper) return;
+  const blk = currentPaper.blocks[bi];
+  const removedItem = blk.items[qi];
+
+  // Find a fresh unused question from same chapter, not already in paper
+  const stu = getStu(currentPaper.stuId);
+  const ch = blk.ch;
+
+  // All questions already in this paper (to avoid duplicates)
+  const usedKeys = new Set(blk.items.map(i => i.key));
+
+  // Build full pool for this chapter
+  const pool = [];
+  (ch.pages || []).forEach((pg, pi) => {
+    const pn = pi + 1;
+    Object.keys(pg.questions || {}).forEach(n => {
+      const q = pg.questions[n];
+      const num = parseInt(n);
+      const key = `q${num}_p${pn}`;
+      if (!usedKeys.has(key)) {
+        pool.push({ pn, type:'q', num, used: q.used||0, lastDate: q.lastDate||null, loc:`Q${num}`, key, ch });
+      }
+    });
+    Object.keys(pg.examples || {}).forEach(n => {
+      const e = pg.examples[n];
+      const num = parseInt(n);
+      const key = `ex${num}_p${pn}`;
+      if (!usedKeys.has(key)) {
+        pool.push({ pn, type:'ex', num, used: e.used||0, lastDate: e.lastDate||null, loc:`Example ${num}`, key, ch });
+      }
+    });
+  });
+
+  if (!pool.length) {
+    showToast('Is chapter mein aur fresh questions nahi hain!', 'e');
+    document.getElementById(`qpop-${bi}-${qi}`).style.display = 'none';
+    return;
+  }
+
+  // Sort by freshness — unused first, then least recently used
+  pool.sort((a, b) => {
+    const scoreA = a.used * 1000 - (a.lastDate ? Math.floor((Date.now()-new Date(a.lastDate).getTime())/86400000) : 9999);
+    const scoreB = b.used * 1000 - (b.lastDate ? Math.floor((Date.now()-new Date(b.lastDate).getTime())/86400000) : 9999);
+    return scoreA - scoreB;
+  });
+
+  const newItem = { ...pool[0], cls: blk.cls, chName: blk.chName };
+  blk.items[qi] = newItem;
+  recalcBlockRanges();
+  renderPaperOutput();
+  showToast(`↺ Replaced with ${newItem.loc} (P${newItem.pn})`, 's');
+}
+
+// ══════════════════════════════════════════════════════════
+// FORGETTING CURVE — WRONG QUESTION TRACKER
+// ══════════════════════════════════════════════════════════
+
+// Intervals by difficulty (days)
+const FC_INTERVALS = { easy: 7, medium: 3, hard: 1 };
+// After each review: easy→15, medium→7, hard→3
+const FC_NEXT = { easy: [7,15,30], medium: [3,7,15], hard: [1,3,7] };
+
+let _wrongTarget = null; // {type:'chapter'|'paper', bi, qi, pn, qtype, num, chRef}
+
+function addDays(dateStr, days) {
+  const d = new Date(dateStr);
+  d.setDate(d.getDate() + days);
+  return d.toISOString().split('T')[0];
+}
+
+// From chapter view — selected chips
+function openWrongFromChapter() {
+  const keys = Object.keys(selQ).filter(k => selQ[k].length > 0);
+  if (!keys.length) { showToast('Pehle questions select karo', 'e'); return; }
+  // Mark wrong for all selected
+  _wrongTarget = { type: 'chapter-bulk', keys };
+  document.getElementById('diffPopupTitle').textContent = 'Wrong Questions Mark Karo';
+  document.getElementById('diffPopupSub').textContent = `${keys.reduce((s,k)=>s+selQ[k].length,0)} questions selected — kitna mushkil tha?`;
+  document.getElementById('diffPopup').classList.add('open');
+}
+
+// From paper ⋯ menu
+function openWrongFromPaper(bi, qi) {
+  const blk = currentPaper.blocks[bi];
+  const item = blk.items[qi];
+  _wrongTarget = { type: 'paper', bi, qi, item };
+  document.getElementById('diffPopupTitle').textContent = `${item.loc} — Wrong Mark`;
+  document.getElementById('diffPopupSub').textContent = `${esc(item.chName)} · P${item.pn} — kitna mushkil tha?`;
+  document.getElementById(`qpop-${bi}-${qi}`).style.display = 'none';
+  document.getElementById('diffPopup').classList.add('open');
+}
+
+function closeDiffPopup() {
+  document.getElementById('diffPopup').classList.remove('open');
+  _wrongTarget = null;
+}
+
+function markWrong(difficulty) {
+  if (!_wrongTarget) return;
+  const today = todayStr();
+  const interval = FC_INTERVALS[difficulty];
+  const nextReview = addDays(today, interval);
+
+  function applyWrong(pgObj, type, num) {
+    const k = String(num);
+    const store = type === 'q' ? pgObj.questions : pgObj.examples;
+    if (!store[k]) store[k] = { used: 0, lastDate: null };
+    if (!store[k].wrong) store[k].wrong = { count: 0, lastDate: null, nextReview: null, difficulty: null, history: [] };
+    store[k].wrong.count++;
+    store[k].wrong.lastDate = today;
+    store[k].wrong.difficulty = difficulty;
+    // Progressive interval: each wrong adds more days
+    const intervals = FC_NEXT[difficulty];
+    const reviewDays = intervals[Math.min(store[k].wrong.count - 1, intervals.length - 1)];
+    store[k].wrong.nextReview = addDays(today, reviewDays);
+    store[k].wrong.history = store[k].wrong.history || [];
+    store[k].wrong.history.push({ date: today, difficulty });
+  }
+
+  if (_wrongTarget.type === 'chapter-bulk') {
+    const ch = getChData();
+    Object.keys(selQ).forEach(pnStr => {
+      const pn = parseInt(pnStr);
+      const pg = ch.pages[pn - 1];
+      if (!pg) return;
+      selQ[pnStr].forEach(key => {
+        if (key.startsWith('q'))  applyWrong(pg, 'q',  parseInt(key.slice(1)));
+        if (key.startsWith('ex')) applyWrong(pg, 'ex', parseInt(key.slice(2)));
+      });
+    });
+    renderQPanel(activePage);
+    showToast(`✗ Wrong marked! Review: ${nextReview}`, 'e');
+
+  } else if (_wrongTarget.type === 'paper') {
+    const item = _wrongTarget.item;
+    const ch = item.ch;
+    const pg = ch.pages[item.pn - 1];
+    applyWrong(pg, item.type, item.num);
+    renderPaperOutput();
+    showToast(`✗ Wrong! Review in ${interval} din (${nextReview})`, 'e');
+  }
+
+  saveToGithub();
+  closeDiffPopup();
+  renderReviewBanner();
+}
+
+// Collect all due/wrong questions for current student
+function getDueQuestions() {
+  const today = todayStr();
+  const due = [], upcoming = [];
+  const stu = getStu(paperStuId) || (data.students || [])[0];
+  if (!stu) return { due, upcoming };
+
+  Object.keys(stu.classes || {}).forEach(cls => {
+    Object.keys(stu.classes[cls].chapters || {}).forEach(chName => {
+      const ch = stu.classes[cls].chapters[chName];
+      (ch.pages || []).forEach((pg, pi) => {
+        const pn = pi + 1;
+        [...Object.entries(pg.questions || {}), ...Object.entries(pg.examples || {})].forEach(([n, q]) => {
+          if (!q.wrong || !q.wrong.count) return;
+          const item = {
+            chName, cls, pn,
+            type: pg.questions[n] ? 'q' : 'ex',
+            num: parseInt(n),
+            loc: pg.questions[n] ? `Q${n}` : `Ex${n}`,
+            difficulty: q.wrong.difficulty,
+            nextReview: q.wrong.nextReview,
+            count: q.wrong.count
+          };
+          if (q.wrong.nextReview <= today) due.push(item);
+          else upcoming.push(item);
+        });
+      });
+    });
+  });
+  return { due, upcoming };
+}
+
+function renderReviewBanner() {
+  const banner = document.getElementById('reviewBanner');
+  const list   = document.getElementById('reviewList');
+  const countEl = document.getElementById('reviewCount');
+  if (!banner) return;
+
+  const { due } = getDueQuestions();
+  if (!due.length) { banner.classList.remove('show'); return; }
+
+  banner.classList.add('show');
+  countEl.textContent = due.length + ' due';
+  list.innerHTML = due.slice(0, 8).map(item => {
+    const diffCls = `dp-${item.difficulty}`;
+    return `<div class="review-item">
+      <span class="review-loc">${esc(item.loc)}</span>
+      <span class="review-ch">${esc(item.chName)} · P${item.pn}</span>
+      <span class="diff-pill-s ${diffCls}">${item.difficulty}</span>
+      <span style="font-size:.6rem;color:var(--red);font-family:var(--mono);">${item.count}✗</span>
+    </div>`;
+  }).join('') + (due.length > 8 ? `<div style="font-size:.62rem;color:var(--t2);padding:4px 0;">+${due.length-8} more...</div>` : '');
+}
+
+function recalcBlockRanges() {
+  let cursor = 1;
+  currentPaper.blocks.forEach(blk => {
+    blk.start = cursor;
+    blk.end   = cursor + blk.items.length - 1;
+    blk.count = blk.items.length;
+    cursor    = blk.end + 1;
+  });
+  currentPaper.totalQ = currentPaper.blocks.reduce((s, b) => s + b.items.length, 0);
+}
+
+function toggleSec(bi) {
+  const body = document.getElementById(`gsec-${bi}`);
+  const chev = document.getElementById(`gchev-${bi}`);
+  const open = body.classList.toggle('open');
+  chev.classList.toggle('open', open);
+}
+
+// Mark entire paper done
+async function markPaperDone() {
+  if (!currentPaper) return;
+  const stu = getStu(currentPaper.stuId);
+  if (!stu) return;
+  const today = todayStr();
+  const fromQueueIdx = currentPaper.fromQueueIdx;
+
+  // Save exact question snapshot BEFORE marking — needed for undo
+  const snapshot = [];
+  currentPaper.blocks.forEach(blk => {
+    blk.items.forEach(item => {
+      snapshot.push({
+        stuId: currentPaper.stuId,
+        cls: item.cls || blk.cls,
+        chName: item.chName || blk.chName,
+        pn: item.pn,
+        type: item.type,
+        num: item.num
+      });
+    });
+  });
+
+  currentPaper.blocks.forEach(blk => {
+    blk.items.forEach(item => {
+      const ch = blk.ch;
+      const pg = ch.pages[item.pn - 1];
+      if (!pg) return;
+      const key = String(item.num);
+      if (item.type === 'q') {
+        if (!pg.questions[key]) pg.questions[key] = { used:0, lastDate:null };
+        pg.questions[key].used++;
+        pg.questions[key].lastDate = today;
+      } else {
+        if (!pg.examples[key]) pg.examples[key] = { used:0, lastDate:null };
+        pg.examples[key].used++;
+        pg.examples[key].lastDate = today;
+      }
+    });
+  });
+
+  const hist = {
+    date: today, datetime: new Date().toLocaleString('en-IN'),
+    studentName: stu.name, stuId: currentPaper.stuId,
+    totalQ: currentPaper.totalQ, type: 'auto-paper',
+    chapters: currentPaper.blocks.map(b => ({ chapter: b.chName, cls: b.cls, count: b.count })),
+    snapshot  // ← full question list for undo
+  };
+  if (!data.history) data.history = [];
+  data.history.unshift(hist);
+  renderHome();
+  document.getElementById('nb-paper').classList.remove('show');
+  showToast('✓ Paper marked done! Saved to history', 's');
+
+  // Remove from queue if loaded from queue
+  if (fromQueueIdx !== undefined && data.queue) {
+    data.queue.splice(fromQueueIdx, 1);
+    updateQueueBadge();
+  }
+
+  saveToGithub();
+  currentPaper = null;
+  document.getElementById('paperOutput').style.display = 'none';
+}
+
+function confirmUndo() {
+  const last = data.history?.[0];
+  if (!last) return;
+  const qCount = last.snapshot?.length || 0;
+  if (confirm(`↩ Undo karein?\n\n"${last.studentName}" ka ${last.date} wala paper (${qCount} questions) wapas fresh ho jaayega.\nHistory se bhi hata diya jaayega.\n\nKya aap sure hain?`)) {
+    undoLastPaper();
+  }
+}
+function undoLastPaper() {
+  if (!data.history || !data.history.length) return;
+  const last = data.history[0];
+  if (!last.snapshot || !last.snapshot.length) {
+    showToast('Is entry mein undo data nahi hai', 'e'); return;
+  }
+
+  let undone = 0;
+  last.snapshot.forEach(item => {
+    const stu = getStu(item.stuId);
+    if (!stu) return;
+    const pg = stu.classes?.[item.cls]?.chapters?.[item.chName]?.pages?.[item.pn - 1];
+    if (!pg) return;
+    const store = item.type === 'q' ? pg.questions : pg.examples;
+    const key = String(item.num);
+    if (store[key] && store[key].used > 0) {
+      store[key].used--;
+      // Agar used 0 ho gaya to lastDate bhi clear karo
+      if (store[key].used === 0) store[key].lastDate = null;
+      undone++;
+    }
+  });
+
+  // History se bhi hatao
+  data.history.shift();
+  renderHome();
+  renderHistoryPage();
+  renderHistory();
+  saveToGithub();
+  showToast(`↩ Undo ho gaya! ${undone} questions wapas fresh hue`, 's');
+}
+
+// Download all images for a chapter block
+async function downloadChapterImages(bi) {
+  if (!currentPaper) return;
+  const blk = currentPaper.blocks[bi];
+  const prefix = blk.ch.prefix || blk.chName.replace(/\s+/g,'_').toLowerCase().slice(0,12);
+
+  // Group items by page — ensure pn is integer
+  const byPage = {};
+  blk.items.forEach(item => {
+    const pn = parseInt(item.pn);
+    if (!byPage[pn]) byPage[pn] = { qNums:[], exNums:[] };
+    if (item.type === 'q')  byPage[pn].qNums.push(parseInt(item.num));
+    if (item.type === 'ex') byPage[pn].exNums.push(parseInt(item.num));
+  });
+  const pages = Object.keys(byPage).map(Number).sort((a,b)=>a-b);
+
+  showOverlay('Downloading chapter images...', 0);
+  let done = 0;
+  for (const pn of pages) {
+    const { qNums, exNums } = byPage[pn];
+    // Same filename structure as old app: prefix_pN_qX_qY_exA_exB.png
+    let nameParts = [`${prefix}_p${pn}`];
+    if (qNums.length)  nameParts.push(qNums.sort((a,b)=>a-b).map(q => `q${q}`).join('_'));
+    if (exNums.length) nameParts.push(exNums.sort((a,b)=>a-b).map(e => `ex${e}`).join('_'));
+    const fname = nameParts.join('_') + '.png';
+
+    const url = buildImgUrl(blk.ch, pn);
+    if (!url) { done++; continue; }
+    updateOverlay(fname, done / pages.length * 100);
+    try {
+      const res = await fetch(url);
+      if (res.ok) {
+        const blob = await res.blob();
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = fname;
+        a.click();
+        await new Promise(r => setTimeout(r, 400));
+      }
+    } catch(e) {}
+    done++;
+  }
+  hideOverlay();
+  showToast(`✓ ${done} images downloaded!`, 's');
+}
+
+// Download ALL images in paper
+async function downloadPaperImages() {
+  if (!currentPaper) return;
+  const allPages = [];
+  currentPaper.blocks.forEach(blk => {
+    const prefix = blk.ch.prefix || blk.chName.replace(/\s+/g,'_').toLowerCase().slice(0,12);
+    // Group items by page — ensure integers
+    const byPage = {};
+    blk.items.forEach(item => {
+      const pn = parseInt(item.pn);
+      if (!byPage[pn]) byPage[pn] = { qNums:[], exNums:[] };
+      if (item.type === 'q')  byPage[pn].qNums.push(parseInt(item.num));
+      if (item.type === 'ex') byPage[pn].exNums.push(parseInt(item.num));
+    });
+    Object.keys(byPage).map(Number).sort((a,b)=>a-b).forEach(pn => {
+      const { qNums, exNums } = byPage[pn];
+      let nameParts = [`${prefix}_p${pn}`];
+      if (qNums.length)  nameParts.push(qNums.sort((a,b)=>a-b).map(q=>`q${q}`).join('_'));
+      if (exNums.length) nameParts.push(exNums.sort((a,b)=>a-b).map(e=>`ex${e}`).join('_'));
+      allPages.push({ url: buildImgUrl(blk.ch, pn), name: nameParts.join('_') + '.png' });
+    });
+  });
+  const valid = allPages.filter(p => p.url);
+  if (!valid.length) { showToast('Koi image URL nahi bana', 'a'); return; }
+  showOverlay('Downloading all images...', 0);
+  let done = 0;
+  for (const item of valid) {
+    updateOverlay(item.name, done / valid.length * 100);
+    try {
+      const res = await fetch(item.url);
+      if (res.ok) {
+        const blob = await res.blob();
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = item.name;
+        a.click();
+        await new Promise(r => setTimeout(r, 400));
+      }
+    } catch(e) {}
+    done++;
+  }
+  hideOverlay();
+  showToast(`✓ ${done} images downloaded!`, 's');
+  await markPaperDone();
+}
+
+// ══════════════════════════════════════════════════════════
+// ZIP DOWNLOAD FUNCTIONS
+// ══════════════════════════════════════════════════════════
+
+// Helper — collect pages list with filenames for a block
+function getBlockPages(blk) {
+  const prefix = blk.ch.prefix || blk.chName.replace(/\s+/g,'_').toLowerCase().slice(0,12);
+  const byPage = {};
+  blk.items.forEach(item => {
+    const pn = parseInt(item.pn);
+    if (!byPage[pn]) byPage[pn] = { qNums:[], exNums:[] };
+    if (item.type === 'q')  byPage[pn].qNums.push(parseInt(item.num));
+    if (item.type === 'ex') byPage[pn].exNums.push(parseInt(item.num));
+  });
+  const result = [];
+  Object.keys(byPage).map(Number).sort((a,b)=>a-b).forEach(pn => {
+    const { qNums, exNums } = byPage[pn];
+    let nameParts = [`${prefix}_p${pn}`];
+    if (qNums.length)  nameParts.push(qNums.sort((a,b)=>a-b).map(q=>`q${q}`).join('_'));
+    if (exNums.length) nameParts.push(exNums.sort((a,b)=>a-b).map(e=>`ex${e}`).join('_'));
+    result.push({ url: buildImgUrl(blk.ch, pn), name: nameParts.join('_') + '.png', pn });
+  });
+  return result;
+}
+
+// ZIP — single chapter
+async function downloadChapterImagesZip(bi) {
+  if (!currentPaper) return;
+  await loadJSZip();
+  if (typeof JSZip === 'undefined') { showToast('JSZip load nahi hua, retry karo', 'e'); return; }
+  const blk = currentPaper.blocks[bi];
+
+  const zip = new JSZip();
+  const chShort = blk.chName.replace(/\s+/g,'_').toLowerCase().slice(0,12);
+  showOverlay('ZIP ban raha hai...', 0);
+
+  let done = 0;
+  for (const item of valid) {
+    updateOverlay(item.name, done / valid.length * 100);
+    try {
+      const res = await fetch(item.url);
+      if (res.ok) {
+        const blob = await res.blob();
+        zip.file(item.name, blob);
+      }
+    } catch(e) {}
+    done++;
+  }
+
+  updateOverlay('ZIP compress ho raha hai...', 95);
+  const zipBlob = await zip.generateAsync({ type:'blob', compression:'DEFLATE', compressionOptions:{ level:6 } });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(zipBlob);
+  a.download = `${chShort}_paper_${todayStr()}.zip`;
+  a.click();
+  hideOverlay();
+  showToast(`✅ ZIP downloaded! (${done} images)`, 's');
+}
+
+// ZIP — full paper (all chapters)
+async function downloadPaperImagesZip() {
+  if (!currentPaper) return;
+  await loadJSZip();
+
+  const allPages = [];
+  currentPaper.blocks.forEach(blk => {
+    getBlockPages(blk).forEach(p => allPages.push({ ...p, chName: blk.chName }));
+  });
+  const valid = allPages.filter(p => p.url);
+  if (!valid.length) { showToast('Koi image URL nahi bana', 'a'); return; }
+
+  const zip = new JSZip();
+  const stu = getStu(currentPaper.stuId);
+  const stuName = (stu?.name || 'student').replace(/\s+/g,'_');
+
+  showOverlay('ZIP ban raha hai...', 0);
+
+  let done = 0;
+  for (const item of valid) {
+    updateOverlay(item.name, Math.round(done / valid.length * 90));
+    try {
+      const res = await fetch(item.url);
+      if (res.ok) {
+        const blob = await res.blob();
+        // Flat structure — no subfolders
+        zip.file(item.name, blob);
+      }
+    } catch(e) {}
+    done++;
+  }
+
+  updateOverlay('ZIP compress ho raha hai...', 95);
+  const zipBlob = await zip.generateAsync({ type:'blob', compression:'DEFLATE', compressionOptions:{ level:6 } });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(zipBlob);
+  a.download = `${stuName}_paper_${todayStr()}.zip`;
+  a.click();
+  hideOverlay();
+  showToast(`✅ ZIP downloaded! (${done} images)`, 's');
+  await markPaperDone();
+}
+
+// ══════════════════════════════════════════════════════════
+// IMAGE FULLSCREEN
+// ══════════════════════════════════════════════════════════
+function openImgFs(url, title) {
+  fsImgUrl = url;
+  document.getElementById('ifs-title').textContent = title;
+  document.getElementById('ifs-img').src = url;
+  document.getElementById('img-fs').classList.add('open');
+}
+function closeImgFs() { document.getElementById('img-fs').classList.remove('open'); }
+async function dlSingleImg() {
+  if (!fsImgUrl) return;
+  try {
+    const res = await fetch(fsImgUrl);
+    if (res.ok) {
+      const blob = await res.blob();
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = fsImgUrl.split('/').pop();
+      a.click();
+      showToast('Downloaded!', 's');
+    }
+  } catch(e) { showToast('Download failed', 'e'); }
+}
+
+// ══════════════════════════════════════════════════════════
+// HISTORY
+// ══════════════════════════════════════════════════════════
+function renderHistory() {
+  const el = document.getElementById('histList');
+  const hist = data.history || [];
+  if (!hist.length) { el.innerHTML = `<div class="empty"><div class="empty-icon">🕐</div><div class="empty-text">Koi history nahi</div></div>`; return; }
+
+  el.innerHTML = hist.slice(0, 50).map((h, hi) => {
+    const isAuto = h.type === 'auto-paper';
+    const detail = isAuto
+      ? (h.chapters || []).map(c => `${c.chapter} (${c.count}Q)`).join(' · ')
+      : (h.pages || []).map(p => { const qs = p.qNums?.length ? 'Q' + p.qNums.join(',Q') : ''; const es = p.exNums?.length ? 'Ex' + p.exNums.join(',Ex') : ''; return `P${p.pageNum}: ${[qs,es].filter(Boolean).join(' ')}`; }).join(' | ');
+    const canUndo = hi === 0 && h.snapshot && h.snapshot.length > 0;
+    const wrongCount = (h.snapshot || []).filter(s => s.wrong).length;
+    const hasSnap = isAuto && h.snapshot && h.snapshot.length > 0;
+
+    // Build question rows grouped by page with images
+    let qRowsHtml = '';
+    if (hasSnap) {
+      const stu = getStu(h.stuId);
+      // Group items by chName+pn
+      const pageGroups = {};
+      h.snapshot.forEach((item, si) => {
+        const key = item.chName + '||' + item.pn;
+        if (!pageGroups[key]) pageGroups[key] = { chName: item.chName, cls: item.cls, pn: item.pn, items: [] };
+        pageGroups[key].items.push({ ...item, si });
+      });
+
+      qRowsHtml = Object.values(pageGroups).map(pg => {
+        // Build image URL
+        const ch = stu?.classes?.[pg.cls]?.chapters?.[pg.chName];
+        const imgUrl = ch ? buildImgUrl(ch, pg.pn) : null;
+
+        const imgHtml = imgUrl
+          ? `<div style="padding:8px 12px 4px;border-bottom:1px solid var(--border);">
+              <img src="${imgUrl}" loading="lazy"
+                style="width:100%;border-radius:7px;cursor:pointer;display:block;"
+                onclick="openImgFs('${imgUrl}','${esc(pg.chName)} · P${pg.pn}')"
+                onerror="this.parentElement.style.display='none'">
+            </div>`
+          : '';
+
+        const qRows = pg.items.map(item => {
+          const w = item.wrong;
+          const pillCls = w ? `wp-${w.difficulty}` : 'wp-none';
+          const pillTxt = w ? `✗ ${w.difficulty}` : '✓ OK';
+          return `<div class="hist-q-row${w ? ' wrong-row' : ''}" data-si="${item.si}" onclick="cycleWrong(${hi},${item.si})">
+            <span class="hist-q-loc">${esc(item.loc||((item.type==='q'?'Q':'Ex')+item.num))}</span>
+            <span class="hist-q-ch">${esc(item.chName)} · P${item.pn}</span>
+            <span class="wrong-pill ${pillCls}">${pillTxt}</span>
+          </div>`;
+        }).join('');
+
+        return imgHtml + qRows;
+      }).join('');
+
+      qRowsHtml += `<div style="padding:10px 13px;background:var(--s2);border-top:1px solid var(--border);">
+        <div style="font-size:.65rem;color:var(--t2);margin-bottom:8px;">Question tap karo aur difficulty set karo:</div>
+        <div style="display:flex;gap:7px;">
+          <span style="flex:1;text-align:center;padding:7px 4px;border-radius:8px;font-size:.7rem;font-weight:700;background:var(--s3);color:var(--t2);border:1px solid var(--border);">✓ OK</span>
+          <span style="flex:1;text-align:center;padding:7px 4px;border-radius:8px;font-size:.7rem;font-weight:700;background:rgba(34,197,94,.12);color:var(--green);border:1px solid rgba(34,197,94,.25);">😊 Easy</span>
+          <span style="flex:1;text-align:center;padding:7px 4px;border-radius:8px;font-size:.7rem;font-weight:700;background:rgba(245,158,11,.12);color:var(--amber);border:1px solid rgba(245,158,11,.25);">😐 Medium</span>
+          <span style="flex:1;text-align:center;padding:7px 4px;border-radius:8px;font-size:.7rem;font-weight:700;background:rgba(239,68,68,.12);color:var(--red);border:1px solid rgba(239,68,68,.25);">😰 Hard</span>
+        </div>
+      </div>`;
+    }
+
+    return `<div class="hist-card" id="hcard-${hi}" style="${canUndo ? 'border-color:rgba(245,158,11,.3);' : ''}">
+      <div class="hist-card-hdr" onclick="toggleHistCard(${hi})">
+        <div class="hist-hdr-main">
+          <div class="hist-date">${h.datetime || h.date} ${isAuto ? '· <span style="color:var(--cyan)">Auto Paper</span>' : ''}${wrongCount > 0 ? ` · <span style="color:var(--red)">✗ ${wrongCount} wrong</span>` : ''}</div>
+          <div class="hist-chapter">${isAuto ? `${h.studentName} · ${h.totalQ}Q` : `${h.chapter} — ${h.className}`}</div>
+          <div class="hist-pages">${detail}</div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px;flex-shrink:0;">
+          ${canUndo ? `<button onclick="event.stopPropagation();confirmUndo()" style="background:rgba(245,158,11,.12);border:1px solid rgba(245,158,11,.3);color:var(--amber);border-radius:8px;padding:4px 9px;font-size:.65rem;font-weight:700;cursor:pointer;white-space:nowrap;">↩ Undo</button>` : ''}
+          ${hasSnap ? `<div style="display:flex;gap:4px;"><button onclick="event.stopPropagation();redownloadHistory(${hi},'zip')" style="background:rgba(6,182,212,.1);border:1px solid rgba(6,182,212,.25);color:var(--cyan);border-radius:8px;padding:4px 9px;font-size:.65rem;font-weight:700;cursor:pointer;white-space:nowrap;">↓ ZIP</button><button onclick="event.stopPropagation();redownloadHistory(${hi},'img')" style="background:rgba(59,130,246,.1);border:1px solid rgba(59,130,246,.25);color:var(--blue);border-radius:8px;padding:4px 9px;font-size:.65rem;font-weight:700;cursor:pointer;white-space:nowrap;">↓ IMG</button></div>` : ''}
+          ${hasSnap ? `<span class="hist-chev" id="hchev-${hi}">▾</span>` : ''}
+        </div>
+      </div>
+      ${hasSnap ? `<div class="hist-card-body" id="hbody-${hi}">${qRowsHtml}</div>` : ''}
+    </div>`;
+  }).join('');
+}
+
+// ── RE-DOWNLOAD FROM HISTORY ─────────────────────────────
+async function redownloadHistory(hi, mode = 'zip') {
+  const h = data.history?.[hi];
+  if (!h || !h.snapshot?.length) { showToast('Snapshot nahi hai', 'e'); return; }
+
+  const stu = getStu(h.stuId);
+  if (!stu) { showToast('Student data nahi mila', 'e'); return; }
+
+  // Group snapshot by chName+pn to build unique page image URLs
+  const pageMap = {};
+  h.snapshot.forEach(item => {
+    const ch = stu.classes?.[item.cls]?.chapters?.[item.chName];
+    if (!ch) return;
+    const key = item.chName + '||' + item.pn;
+    if (!pageMap[key]) {
+      const url = buildImgUrl(ch, item.pn);
+      if (!url) return;
+      const prefix = ch.prefix || item.chName.replace(/\s+/g,'_').toLowerCase().slice(0,12);
+      pageMap[key] = { url, name: `${prefix}_p${item.pn}.png` };
+    }
+  });
+
+  const pages = Object.values(pageMap);
+  if (!pages.length) { showToast('Koi image URL nahi bana', 'e'); return; }
+
+  const stuName = (stu.name || 'student').replace(/\s+/g,'_');
+  const dateStr = (h.date || todayStr()).replace(/-/g,'');
+  showOverlay('Re-downloading...', 0);
+  let done = 0;
+
+  if (mode === 'zip') {
+    await loadJSZip();
+    if (typeof JSZip === 'undefined') { hideOverlay(); showToast('JSZip load nahi hua', 'e'); return; }
+    const zip = new JSZip();
+    for (const pg of pages) {
+      updateOverlay(pg.name, Math.round(done / pages.length * 90));
+      try { const res = await fetch(pg.url); if (res.ok) zip.file(pg.name, await res.blob()); } catch(e) {}
+      done++;
+    }
+    updateOverlay('ZIP ban raha hai...', 95);
+    const zipBlob = await zip.generateAsync({ type:'blob', compression:'DEFLATE', compressionOptions:{ level:6 } });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(zipBlob);
+    a.download = `${stuName}_paper_${dateStr}.zip`;
+    a.click();
+    hideOverlay();
+    showToast(`✅ ZIP downloaded! (${done} images)`, 's');
+  } else {
+    for (const pg of pages) {
+      updateOverlay(pg.name, Math.round(done / pages.length * 100));
+      try {
+        const res = await fetch(pg.url);
+        if (res.ok) {
+          const a = document.createElement('a');
+          a.href = URL.createObjectURL(await res.blob());
+          a.download = pg.name;
+          a.click();
+          await new Promise(r => setTimeout(r, 400));
+        }
+      } catch(e) {}
+      done++;
+    }
+    hideOverlay();
+    showToast(`✅ ${done} images downloaded!`, 's');
+  }
+}
+
+function toggleHistCard(hi) {
+  const body = document.getElementById(`hbody-${hi}`);
+  const chev = document.getElementById(`hchev-${hi}`);
+  if (!body) return;
+  const open = body.classList.toggle('open');
+  if (chev) chev.classList.toggle('open', open);
+}
+
+// Cycle wrong difficulty: none → easy → medium → hard → none
+function cycleWrong(hi, si) {
+  const h = data.history?.[hi];
+  if (!h || !h.snapshot?.[si]) return;
+  const item = h.snapshot[si];
+  const cycle = [null, 'easy', 'medium', 'hard'];
+  const cur = item.wrong ? item.wrong.difficulty : null;
+  const nextIdx = (cycle.indexOf(cur) + 1) % cycle.length;
+  const next = cycle[nextIdx];
+
+  if (next === null) {
+    delete item.wrong;
+    _applyWrongToChapter(h.stuId, item, null);
+  } else {
+    item.wrong = { difficulty: next, date: item.wrong?.date || todayStr() };
+    _applyWrongToChapter(h.stuId, item, next);
+  }
+
+  // Sirf is ek row ka pill update karo — no re-render, no scroll jump
+  const targetRow = document.querySelector(`#hbody-${hi} [data-si="${si}"]`);
+  if (targetRow) {
+    const pill = targetRow.querySelector('.wrong-pill');
+    pill.className = `wrong-pill ${next ? 'wp-' + next : 'wp-none'}`;
+    pill.textContent = next ? `✗ ${next}` : '✓ OK';
+    targetRow.className = `hist-q-row${next ? ' wrong-row' : ''}`;
+    targetRow.setAttribute('onclick', `cycleWrong(${hi},${si})`);
+  }
+
+  saveToGithub();
+}
+
+// Sync wrong status to chapter data (for forgetting curve / review banner)
+function _applyWrongToChapter(stuId, item, difficulty) {
+  const stu = getStu(stuId);
+  if (!stu) return;
+  const pg = stu.classes?.[item.cls]?.chapters?.[item.chName]?.pages?.[item.pn - 1];
+  if (!pg) return;
+  const store = item.type === 'q' ? pg.questions : pg.examples;
+  const key = String(item.num);
+  if (!store[key]) store[key] = { used: 0, lastDate: null };
+
+  if (difficulty === null) {
+    delete store[key].wrong;
+    return;
+  }
+  const today = todayStr();
+  const FC_INTERVALS = { easy: 7, medium: 3, hard: 1 };
+  const interval = FC_INTERVALS[difficulty] || 3;
+  if (!store[key].wrong) store[key].wrong = { count: 0, lastDate: null, nextReview: null, difficulty: null, history: [] };
+  // Only increment count if this is a new wrong (not re-marking same entry)
+  const existing = store[key].wrong;
+  if (existing.difficulty !== difficulty) {
+    existing.count = Math.max(existing.count || 0, 1);
+    existing.lastDate = today;
+    existing.difficulty = difficulty;
+    existing.nextReview = addDays(today, interval);
+    existing.history = existing.history || [];
+    if (!existing.history.find(h => h.date === today)) {
+      existing.history.push({ date: today, difficulty });
+    }
+  }
+}
+
+function renderHistoryPage() {
+  const dlSection = document.getElementById('histDownloadSection');
+  const dlEmpty   = document.getElementById('histDownloadEmpty');
+  if (currentPaper) {
+    dlSection.style.display = 'block';
+    dlEmpty.style.display   = 'none';
+  } else {
+    dlSection.style.display = 'none';
+    dlEmpty.style.display   = 'block';
+  }
+}
+
+function removeWrongFromHistory(hi, si) {
+  const h = data.history?.[hi];
+  if (!h?.snapshot?.[si]) return;
+  const item = h.snapshot[si];
+  delete item.wrong;
+  _applyWrongToChapter(h.stuId, item, null);
+  saveToGithub();
+  showToast('✓ Wrong list se hata diya!', 's');
+  renderHistoryPage();
+  renderHistory();
+}
+
+// ══════════════════════════════════════════════════════════
+// PAPER QUEUE
+// ══════════════════════════════════════════════════════════
+
+// Serialize currentPaper for queue (no live ch references)
+function saveToQueue() {
+  if (!currentPaper) return;
+  const stu = getStu(currentPaper.stuId);
+  if (!stu) return;
+
+  if (!data.queue) data.queue = [];
+
+  const qEntry = {
+    id: Date.now(),
+    date: todayStr(),
+    datetime: new Date().toLocaleString('en-IN'),
+    stuId: currentPaper.stuId,
+    stuName: currentPaper.stuName,
+    totalQ: currentPaper.totalQ,
+    label: `${currentPaper.stuName} · ${currentPaper.totalQ}Q · ${todayStr()}`,
+    blocks: currentPaper.blocks.map(blk => ({
+      cls: blk.cls,
+      chName: blk.chName,
+      folder: blk.ch.folder || '',
+      prefix: blk.ch.prefix || '',
+      count: blk.count,
+      start: blk.start,
+      end: blk.end,
+      items: blk.items.map(item => ({
+        cls: item.cls || blk.cls,
+        chName: item.chName || blk.chName,
+        pn: item.pn,
+        type: item.type,
+        num: item.num,
+        loc: item.loc,
+        used: item.used,
+        key: item.key
+      }))
+    }))
+  };
+
+  data.queue.unshift(qEntry);
+  saveToGithub();
+  updateQueueBadge();
+  showToast(`📋 Queue mein save ho gaya! (${data.queue.length} papers)`, 's');
+  document.getElementById('paperOutput').style.display = 'none';
+  currentPaper = null;
+  document.getElementById('nb-paper').classList.remove('show');
+}
+
+// Rebuild live currentPaper from queue entry (re-attach ch references)
+function loadQueuedPaper(qi) {
+  const entry = data.queue?.[qi];
+  if (!entry) return;
+  const stu = getStu(entry.stuId);
+  if (!stu) { showToast('Student nahi mila!', 'e'); return; }
+
+  let cursor = 1;
+  const blocks = entry.blocks.map(blk => {
+    const ch = stu.classes?.[blk.cls]?.chapters?.[blk.chName];
+    if (!ch) return null;
+    const items = blk.items.map(item => {
+      const pg = ch.pages?.[item.pn - 1];
+      const qData = pg ? (item.type === 'q' ? pg.questions?.[String(item.num)] : pg.examples?.[String(item.num)]) : null;
+      return {
+        ...item,
+        ch,
+        used: qData?.used || item.used || 0,
+        lastDate: qData?.lastDate || null
+      };
+    });
+    const count = items.length;
+    const start = cursor, end = cursor + count - 1;
+    cursor = end + 1;
+    return { cls: blk.cls, chName: blk.chName, ch, count, start, end, items };
+  }).filter(Boolean);
+
+  currentPaper = {
+    stuId: entry.stuId,
+    stuName: entry.stuName,
+    date: entry.date,
+    totalQ: blocks.reduce((s, b) => s + b.count, 0),
+    blocks,
+    fromQueueIdx: qi  // remember which queue entry this came from
+  };
+
+  // Go to paper tab and show
+  showPage('paper');
+  renderPaperStuSelector();
+  renderPaperOutput();
+  document.getElementById('paperOutput').style.display = 'block';
+  document.getElementById('nb-paper').classList.add('show');
+  showToast('Paper load ho gaya! Download button dabao — auto save ho jaayega.', 's');
+}
+
+// Download directly from queue — auto marks used + saves history
+async function downloadQueuedPaper(qi) {
+  const entry = data.queue?.[qi];
+  if (!entry) return;
+  const stu = getStu(entry.stuId);
+  if (!stu) { showToast('Student nahi mila!', 'e'); return; }
+
+  // Rebuild currentPaper from queue entry
+  let cursor = 1;
+  const blocks = entry.blocks.map(blk => {
+    const ch = stu.classes?.[blk.cls]?.chapters?.[blk.chName];
+    if (!ch) return null;
+    const items = blk.items.map(item => ({ ...item, ch }));
+    const count = items.length;
+    const start = cursor, end = cursor + count - 1;
+    cursor = end + 1;
+    return { cls: blk.cls, chName: blk.chName, ch, count, start, end, items };
+  }).filter(Boolean);
+
+  if (!blocks.length) { showToast('Paper rebuild nahi hua!', 'e'); return; }
+
+  currentPaper = {
+    stuId: entry.stuId, stuName: entry.stuName,
+    date: entry.date, totalQ: blocks.reduce((s,b) => s+b.count, 0),
+    blocks, fromQueueIdx: qi
+  };
+
+  // Download ZIP directly
+  await loadJSZip();
+  const allPages = [];
+  currentPaper.blocks.forEach(blk => {
+    getBlockPages(blk).forEach(p => allPages.push({ ...p, chName: blk.chName }));
+  });
+  const valid = allPages.filter(p => p.url);
+  if (!valid.length) { showToast('Koi image URL nahi bana', 'a'); currentPaper = null; return; }
+
+  const zip = new JSZip();
+  const stuName = (stu.name || 'student').replace(/\s+/g, '_');
+  showOverlay('ZIP ban raha hai...', 0);
+  let done = 0;
+  for (const item of valid) {
+    updateOverlay(item.name, Math.round(done / valid.length * 90));
+    try {
+      const res = await fetch(item.url);
+      if (res.ok) zip.file(item.name, await res.blob());
+    } catch(e) {}
+    done++;
+  }
+  updateOverlay('ZIP compress ho raha hai...', 95);
+  const zipBlob = await zip.generateAsync({ type:'blob', compression:'DEFLATE', compressionOptions:{ level:6 } });
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(zipBlob);
+  a.download = `${stuName}_${entry.date}_${entry.totalQ}Q.zip`;
+  a.click();
+  hideOverlay();
+  showToast('✅ Downloaded! History mein save ho raha hai...', 's');
+
+  // Auto mark done — removes from queue + saves history + marks used
+  await markPaperDone();
+}
+
+// Download individual images from queue — auto marks used + saves history
+async function downloadQueuedPaperImages(qi) {
+  const entry = data.queue?.[qi];
+  if (!entry) return;
+  const stu = getStu(entry.stuId);
+  if (!stu) { showToast('Student nahi mila!', 'e'); return; }
+
+  let cursor = 1;
+  const blocks = entry.blocks.map(blk => {
+    const ch = stu.classes?.[blk.cls]?.chapters?.[blk.chName];
+    if (!ch) return null;
+    const items = blk.items.map(item => ({ ...item, ch }));
+    const count = items.length;
+    const start = cursor, end = cursor + count - 1;
+    cursor = end + 1;
+    return { cls: blk.cls, chName: blk.chName, ch, count, start, end, items };
+  }).filter(Boolean);
+
+  if (!blocks.length) { showToast('Paper rebuild nahi hua!', 'e'); return; }
+
+  currentPaper = {
+    stuId: entry.stuId, stuName: entry.stuName,
+    date: entry.date, totalQ: blocks.reduce((s,b) => s+b.count, 0),
+    blocks, fromQueueIdx: qi
+  };
+
+  const allPages = [];
+  currentPaper.blocks.forEach(blk => {
+    getBlockPages(blk).forEach(p => allPages.push({ ...p, chName: blk.chName }));
+  });
+  const valid = allPages.filter(p => p.url);
+  if (!valid.length) { showToast('Koi image URL nahi bana', 'a'); currentPaper = null; return; }
+
+  showOverlay('Images download ho rahi hain...', 0);
+  let done = 0;
+  for (const item of valid) {
+    updateOverlay(item.name, Math.round(done / valid.length * 100));
+    try {
+      const res = await fetch(item.url);
+      if (res.ok) {
+        const blob = await res.blob();
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = item.name;
+        a.click();
+        await new Promise(r => setTimeout(r, 400));
+      }
+    } catch(e) {}
+    done++;
+  }
+  hideOverlay();
+  showToast(`✅ ${done} images downloaded! History mein save ho raha hai...`, 's');
+  await markPaperDone();
+}
+
+
+function deleteFromQueue(qi) {
+  if (!data.queue) return;
+  if (!confirm('Is paper ko queue se delete karein?')) return;
+  data.queue.splice(qi, 1);
+  saveToGithub();
+  updateQueueBadge();
+  renderQueuePage();
+  showToast('Queue se hata diya', 'a');
+}
+
+function updateQueueBadge() {
+  const count = (data.queue || []).length;
+  const badge = document.getElementById('nb-queue');
+  if (badge) badge.classList.toggle('show', count > 0);
+  const countEl = document.getElementById('queueCount');
+  if (countEl) countEl.textContent = count > 0 ? count : '';
+}
+
+function renderQueuePage() {
+  updateQueueBadge();
+  const el = document.getElementById('queueList');
+  if (!el) return;
+  const queue = data.queue || [];
+
+  if (!queue.length) {
+    el.innerHTML = `<div class="empty">
+      <div class="empty-icon">📋</div>
+      <div class="empty-text">Queue khali hai.<br>Paper tab pe paper banao → <b style="color:var(--cyan);">Queue mein Save</b> dabao.</div>
+    </div>`;
+    return;
+  }
+
+  el.innerHTML = queue.map((entry, qi) => {
+    const chSummary = (entry.blocks || []).map(b => `${b.chName} (${b.count}Q)`).join(' · ');
+    return `<div class="q-card">
+      <div class="q-card-hdr" onclick="loadQueuedPaper(${qi})">
+        <div class="q-card-icon">📄</div>
+        <div class="q-card-info">
+          <div class="q-card-label">${esc(entry.stuName)} · ${entry.totalQ} Questions</div>
+          <div class="q-card-meta">${entry.datetime || entry.date}</div>
+          <div class="q-card-meta" style="margin-top:3px;white-space:normal;line-height:1.6;">${esc(chSummary)}</div>
+        </div>
+        <div style="font-size:.7rem;color:var(--cyan);font-weight:700;flex-shrink:0;padding-top:2px;">${entry.totalQ}Q</div>
+      </div>
+      <div class="q-card-actions">
+        <button class="btn btn-ghost" style="font-size:.72rem;padding:8px;" onclick="deleteFromQueue(${qi})">🗑</button>
+        <button class="btn" style="font-size:.72rem;flex:1;background:rgba(59,130,246,.15);border:1px solid rgba(59,130,246,.3);color:var(--blue);" onclick="loadQueuedPaper(${qi})">👁 Preview</button>
+        <button class="btn" style="font-size:.72rem;flex:1;background:rgba(6,182,212,.15);border:1px solid rgba(6,182,212,.3);color:var(--cyan);" onclick="downloadQueuedPaperImages(${qi})">🖼 Alag</button>
+        <button class="btn btn-green" style="font-size:.72rem;flex:1;" onclick="downloadQueuedPaper(${qi})">🗜 ZIP</button>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function openModal(mode, target) {
+  modalMode = mode;
+  const body = document.getElementById('mBody');
+  body.innerHTML = '';
+
+  if (mode === 'addStudent') {
+    document.getElementById('mTitle').textContent = 'Student Add Karo';
+    document.getElementById('mHint').textContent = 'Student ka naam aur class bharo.';
+    const emoji = EMOJIS[Math.floor(Math.random() * EMOJIS.length)];
+    body.innerHTML = `
+      <input class="modal-inp" id="mi-sname" placeholder="Student naam *">
+      <div class="row2">
+        <input class="modal-inp" id="mi-sclass" placeholder="Class (e.g. 10-A)" style="margin-bottom:0;">
+        <input class="modal-inp" id="mi-semoji" value="${emoji}" placeholder="Emoji" style="margin-bottom:0;text-align:center;font-size:1.1rem;">
+      </div>`;
+    document.getElementById('mConfirmBtn').textContent = 'Add Student';
+
+  } else if (mode === 'addClass') {
+    window._modalStuId = target;
+    document.getElementById('mTitle').textContent = 'Class / Chapter Add Karo';
+    document.getElementById('mHint').textContent = 'Class, chapter name, GitHub folder path aur image prefix bharo.';
+    body.innerHTML = `
+      <div class="row2">
+        <input class="modal-inp" id="mi-cls" placeholder="Class (e.g. Class 10)">
+        <input class="modal-inp" id="mi-chname" placeholder="Chapter (e.g. Mensuration)">
+      </div>
+      <input class="modal-inp" id="mi-folder" placeholder="GitHub folder (e.g. books/class10/ch9)">
+      <input class="modal-inp" id="mi-prefix" placeholder="Image prefix (e.g. mensuration)">
+      <input class="modal-inp" id="mi-pages" type="number" placeholder="Total pages (e.g. 13)" min="1">`;
+    document.getElementById('mConfirmBtn').textContent = 'Add Chapter';
+
+  } else if (mode === 'addPage') {
+    document.getElementById('mTitle').textContent = 'Pages Add Karo';
+    document.getElementById('mHint').textContent = 'Kitne pages add karne hain?';
+    body.innerHTML = `<input class="modal-inp" id="mi-npages" type="number" placeholder="Pages count (e.g. 5)" min="1">`;
+    document.getElementById('mConfirmBtn').textContent = 'Add';
+  }
+
+  document.getElementById('modal').classList.add('open');
+  setTimeout(() => document.querySelector('.modal-inp')?.focus(), 100);
+}
+
+function closeModal() { document.getElementById('modal').classList.remove('open'); }
+
+function confirmModal() {
+  const g = id => (document.getElementById(id) || {}).value?.trim() || '';
+  const gn = id => parseInt((document.getElementById(id) || {}).value) || 0;
+
+  if (modalMode === 'addStudent') {
+    const name = g('mi-sname');
+    if (!name) { showToast('Naam daalo', 'e'); return; }
+    data.students.push({
+      id: Date.now().toString(),
+      name,
+      class: g('mi-sclass'),
+      emoji: g('mi-semoji') || '👦',
+      classes: {}
+    });
+    renderHome();
+
+  } else if (modalMode === 'addClass') {
+    const stuId = window._modalStuId;
+    const stu = getStu(stuId);
+    if (!stu) return;
+    const cls = g('mi-cls'), chName = g('mi-chname'), folder = g('mi-folder'), prefix = g('mi-prefix');
+    const pages = gn('mi-pages');
+    if (!cls || !chName) { showToast('Class aur chapter name bharo', 'e'); return; }
+    if (!stu.classes[cls]) stu.classes[cls] = { chapters: {} };
+    if (!stu.classes[cls].chapters[chName]) {
+      stu.classes[cls].chapters[chName] = { folder, prefix, pages: [] };
+    }
+    const ch = stu.classes[cls].chapters[chName];
+    while (ch.pages.length < pages) ch.pages.push({ questions: {}, examples: {} });
+    renderHome();
+    saveToGithub();
+
+  } else if (modalMode === 'addPage') {
+    const n = gn('mi-npages');
+    if (!n || n < 1) { showToast('Number bharo', 'e'); return; }
+    const ch = getChData();
+    for (let i = 0; i < n; i++) ch.pages.push({ questions: {}, examples: {} });
+    renderPageTabs();
+    showToast(`${n} pages add ho gaye!`, 's');
+  }
+
+  closeModal();
+}
+
+// ══════════════════════════════════════════════════════════
+// GITHUB SYNC
+// ══════════════════════════════════════════════════════════
+async function saveToGithub() {
+  const s = getS();
+  if (!s.token) return;
+  const content = btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2))));
+  let sha = '';
+  try {
+    const r = await fetch(`https://api.github.com/repos/${s.owner}/${s.repo}/contents/bhusmart_data.json`,
+      { headers: { Authorization: `token ${s.token}`, Accept: 'application/vnd.github.v3+json' } });
+    if (r.ok) sha = (await r.json()).sha;
+    await fetch(`https://api.github.com/repos/${s.owner}/${s.repo}/contents/bhusmart_data.json`, {
+      method: 'PUT',
+      headers: { Authorization: `token ${s.token}`, Accept: 'application/vnd.github.v3+json', 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: 'Update BHUSMART data', content, sha })
+    });
+  } catch(e) {}
+}
+
+async function loadFromGithub() {
+  const s = getS();
+  if (!s.token || !s.owner || !s.repo) {
+    showToast('Settings mein token/owner/repo daalo', 'e');
+    showPage('settings');
+    return;
+  }
+  showToast('Loading from GitHub...', 'a');
+  try {
+    // 1. Try new format first
+    const r = await fetch(`https://api.github.com/repos/${s.owner}/${s.repo}/contents/bhusmart_data.json`, {
+      headers: { Authorization: `token ${s.token}`, Accept: 'application/vnd.github.v3+json' },
+      cache: 'no-cache'
+    });
+    if (r.ok) {
+      const d = await r.json();
+      data = JSON.parse(decodeURIComponent(escape(atob(d.content))));
+      if (!data.history) data.history = [];
+      if (!data.queue) data.queue = [];
+      renderHome();
+      updateQueueBadge();
+      showToast('✓ Data loaded!', 's');
+      return;
+    }
+    // 2. Try OLD format (bhusmart_data_old.json) — auto migrate
+    const rOld = await fetch(`https://api.github.com/repos/${s.owner}/${s.repo}/contents/bhusmart_data_old.json`, {
+      headers: { Authorization: `token ${s.token}`, Accept: 'application/vnd.github.v3+json' },
+      cache: 'no-cache'
+    });
+    if (rOld.ok) {
+      const dOld = await rOld.json();
+      const old = JSON.parse(decodeURIComponent(escape(atob(dOld.content))));
+      data = migrateOldData(old);
+      renderHome();
+      await saveToGithub();
+      const clsCount = Object.keys(old.classes || {}).length;
+      let chCount = 0;
+      Object.values(old.classes || {}).forEach(c => chCount += Object.keys(c.chapters || {}).length);
+      showToast('Purana data import ho gaya! ' + chCount + ' chapters migrated', 's');
+      return;
+    }
+    // 3. Fresh start
+    data = { students: [], history: [] };
+    renderHome();
+    showToast('Fresh start! Student add karo.', 'a');
+  } catch(e) {
+    showToast('Network error: ' + e.message, 'e');
+    renderHome();
+  }
+}
+
+function migrateOldData(old) {
+  // Old: { classes: { "Class 10": { chapters: { "Ch": { folder, prefix, pages } } } }, history, studentName }
+  // New: { students: [{ id, name, emoji, class, classes }], history }
+  const defaultStudent = {
+    id: 'migrated_' + Date.now(),
+    name: old.studentName || 'Student',
+    emoji: '🎓',
+    class: Object.keys(old.classes || {})[0] || '',
+    classes: {}
+  };
+  Object.keys(old.classes || {}).forEach(cls => {
+    defaultStudent.classes[cls] = { chapters: {} };
+    Object.keys((old.classes[cls] || {}).chapters || {}).forEach(chName => {
+      const oldCh = old.classes[cls].chapters[chName];
+      defaultStudent.classes[cls].chapters[chName] = {
+        folder: oldCh.folder || '',
+        prefix: oldCh.prefix || '',
+        pages: (oldCh.pages || []).map(pg => ({
+          questions: pg.questions || {},
+          examples:  pg.examples  || {}
+        }))
+      };
+    });
+  });
+  return { students: [defaultStudent], history: old.history || [] };
+}
+
+// ══════════════════════════════════════════════════════════
+// OVERLAY + UTILS
+// ══════════════════════════════════════════════════════════
+function showOverlay(msg, pct) {
+  document.getElementById('dl-overlay').classList.add('open');
+  document.getElementById('dl-text').textContent = msg;
+  document.getElementById('dl-fill').style.width = pct + '%';
+}
+function updateOverlay(msg, pct) {
+  document.getElementById('dl-text').textContent = 'Downloading: ' + msg;
+  document.getElementById('dl-fill').style.width = pct + '%';
+}
+function hideOverlay() { document.getElementById('dl-overlay').classList.remove('open'); }
+
+function fmtD(d) { if (!d) return ''; const dt = new Date(d); return `${dt.getDate()}/${dt.getMonth()+1}`; }
+function todayStr() { return new Date().toISOString().split('T')[0]; }
+function esc(s) { return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
+
+let _tt;
+function showToast(msg, type) {
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.className = `toast ${type} show`;
+  clearTimeout(_tt); _tt = setTimeout(() => t.classList.remove('show'), 2600);
+}
+
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') { closeModal(); closeImgFs(); }
+  if (e.key === 'Enter' && document.getElementById('modal').classList.contains('open')) confirmModal();
+  if (e.key === 'Enter' && (document.activeElement?.id === 'qInp' || document.activeElement?.id === 'exInp')) confirmEdit();
+});
+
+// PWA
+let dp;
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault(); dp = e;
+  const btn = document.createElement('div');
+  btn.className = 'ni';
+  btn.innerHTML = '<div class="ni-icon">📲</div><div class="ni-lbl">Install</div>';
+  btn.onclick = async () => { if (!dp) return; dp.prompt(); const { outcome } = await dp.userChoice; if (outcome === 'accepted') btn.remove(); dp = null; };
+  document.getElementById('bnav').appendChild(btn);
+});
+if ('serviceWorker' in navigator) window.addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => {}));
+</script>
+</body>
+</html>
