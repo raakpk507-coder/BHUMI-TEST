@@ -3,7 +3,7 @@
     {
       "id": "stu_bhumi_c5",
       "name": "Bhumi",
-      "emoji": "\ud83d\udc67",
+      "emoji": "👧",
       "class": "Class 5",
       "classes": {
         "Class 5": {
@@ -82,6 +82,26 @@
               "folder": "Books/class-5/MATH/Addition and Subtraction of Fractions",
               "prefix": "ch8fractions",
               "pages": [
+                {
+                  "questions": {},
+                  "examples": {}
+                },
+                {
+                  "questions": {},
+                  "examples": {}
+                },
+                {
+                  "questions": {},
+                  "examples": {}
+                },
+                {
+                  "questions": {},
+                  "examples": {}
+                },
+                {
+                  "questions": {},
+                  "examples": {}
+                },
                 {
                   "questions": {},
                   "examples": {}
