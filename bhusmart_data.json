@@ -1,5 +1,19 @@
 {
-  "students": [],
+  "students": [
+    "Area": {
+  "folder": "Books/class-5/MATH/Area",
+  "prefix": "area",
+  "pages": [
+    {"questions": {}, "examples": {}},
+    {"questions": {}, "examples": {}},
+    {"questions": {}, "examples": {}},
+    {"questions": {}, "examples": {}},
+    {"questions": {}, "examples": {}},
+    {"questions": {}, "examples": {}},
+    {"questions": {}, "examples": {}}
+  ]
+ }
+  ],
   "history": [],
   "queue": []
 }
