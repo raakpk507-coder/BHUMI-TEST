@@ -1,0 +1,80 @@
+{
+  "students": [
+    {
+      "id": "stu_bhumi_c5",
+      "name": "Bhumi",
+      "emoji": "👧",
+      "class": "Class 5",
+      "classes": {
+        "Class 5": {
+          "chapters": {
+            "Revision": {"folder": "Books/class-5/MATH/Revision","prefix": "rev","pages": [{"questions": {},"examples": {}}]},
+            "Roman Numerals": {"folder": "Books/class-5/MATH/Roman Numerals","prefix": "roman","pages": [{"questions": {},"examples": {}}]},
+            "Large Numbers (Up to Ten Crores)": {"folder": "Books/class-5/MATH/Large Numbers (Up to Ten Crores)","prefix": "largenum","pages": [{"questions": {},"examples": {}}]},
+            "Operations on Large Numbers": {"folder": "Books/class-5/MATH/Operations on Large Numbers","prefix": "oplargenum","pages": [{"questions": {},"examples": {}}]},
+            "Simplification": {"folder": "Books/class-5/MATH/Simplification","prefix": "simplify","pages": [{"questions": {},"examples": {}}]},
+            "Factors and Multiples": {"folder": "Books/class-5/MATH/Factors and Multiples","prefix": "factors","pages": [{"questions": {},"examples": {}}]},
+            "Fractions": {"folder": "Books/class-5/MATH/Fractions","prefix": "fractions","pages": [{"questions": {},"examples": {}}]},
+            "Addition and Subtraction of Fractions": {"folder": "Books/class-5/MATH/Addition and Subtraction of Fractions","prefix": "addfrac","pages": [{"questions": {},"examples": {}}]},
+            "Multiplication and Division of Fractions": {"folder": "Books/class-5/MATH/Multiplication and Division of Fractions","prefix": "mulfrac","pages": [{"questions": {},"examples": {}}]},
+            "Decimals": {"folder": "Books/class-5/MATH/Decimals","prefix": "decimals","pages": [{"questions": {},"examples": {}}]},
+            "Rounding Numbers": {"folder": "Books/class-5/MATH/Rounding Numbers","prefix": "rounding","pages": [{"questions": {},"examples": {}}]},
+            "Measures of Length, Mass and Capacity": {"folder": "Books/class-5/MATH/Measures of Length, Mass and Capacity","prefix": "measures","pages": [{"questions": {},"examples": {}}]},
+            "Average": {"folder": "Books/class-5/MATH/Average","prefix": "average","pages": [{"questions": {},"examples": {}}]},
+            "Percentage": {"folder": "Books/class-5/MATH/Percentage","prefix": "percent","pages": [{"questions": {},"examples": {}}]},
+            "Time": {"folder": "Books/class-5/MATH/Time","prefix": "time","pages": [{"questions": {},"examples": {}}]},
+            "Money": {"folder": "Books/class-5/MATH/Money","prefix": "money","pages": [{"questions": {},"examples": {}}]},
+            "Basic Geometrical Concepts": {"folder": "Books/class-5/MATH/Basic Geometrical Concepts","prefix": "geom","pages": [{"questions": {},"examples": {}}]},
+            "Concept of Angles": {"folder": "Books/class-5/MATH/Concept of Angles","prefix": "angles","pages": [{"questions": {},"examples": {}}]},
+            "Parallel and Perpendicular Lines": {"folder": "Books/class-5/MATH/Parallel and Perpendicular Lines","prefix": "parallel","pages": [{"questions": {},"examples": {}}]},
+            "Triangles": {"folder": "Books/class-5/MATH/Triangles","prefix": "triangles","pages": [{"questions": {},"examples": {}}]},
+            "Circles": {"folder": "Books/class-5/MATH/Circles","prefix": "circles","pages": [{"questions": {},"examples": {}}]},
+            "Perimeters of Rectilinear Figures": {"folder": "Books/class-5/MATH/Perimeters of Rectilinear Figures","prefix": "perimeter","pages": [{"questions": {},"examples": {}}]},
+            "Area": {"folder": "Books/class-5/MATH/Area","prefix": "area","pages": [{"questions": {},"examples": {}},{"questions": {},"examples": {}},{"questions": {},"examples": {}},{"questions": {},"examples": {}},{"questions": {},"examples": {}},{"questions": {},"examples": {}},{"questions": {},"examples": {}}]},
+            "Volume": {"folder": "Books/class-5/MATH/Volume","prefix": "volume","pages": [{"questions": {},"examples": {}}]},
+            "Pictograph and Bar Graph": {"folder": "Books/class-5/MATH/Pictograph and Bar Graph","prefix": "graph","pages": [{"questions": {},"examples": {}}]}
+          }
+        }
+      }
+    },
+    {
+      "id": "stu_shivansh_c5",
+      "name": "Shivansh",
+      "emoji": "👦",
+      "class": "Class 5",
+      "classes": {
+        "Class 5": {
+          "chapters": {
+            "Revision": {"folder": "Books/class-5/MATH/Revision","prefix": "rev","pages": [{"questions": {},"examples": {}}]},
+            "Roman Numerals": {"folder": "Books/class-5/MATH/Roman Numerals","prefix": "roman","pages": [{"questions": {},"examples": {}}]},
+            "Large Numbers (Up to Ten Crores)": {"folder": "Books/class-5/MATH/Large Numbers (Up to Ten Crores)","prefix": "largenum","pages": [{"questions": {},"examples": {}}]},
+            "Operations on Large Numbers": {"folder": "Books/class-5/MATH/Operations on Large Numbers","prefix": "oplargenum","pages": [{"questions": {},"examples": {}}]},
+            "Simplification": {"folder": "Books/class-5/MATH/Simplification","prefix": "simplify","pages": [{"questions": {},"examples": {}}]},
+            "Factors and Multiples": {"folder": "Books/class-5/MATH/Factors and Multiples","prefix": "factors","pages": [{"questions": {},"examples": {}}]},
+            "Fractions": {"folder": "Books/class-5/MATH/Fractions","prefix": "fractions","pages": [{"questions": {},"examples": {}}]},
+            "Addition and Subtraction of Fractions": {"folder": "Books/class-5/MATH/Addition and Subtraction of Fractions","prefix": "addfrac","pages": [{"questions": {},"examples": {}}]},
+            "Multiplication and Division of Fractions": {"folder": "Books/class-5/MATH/Multiplication and Division of Fractions","prefix": "mulfrac","pages": [{"questions": {},"examples": {}}]},
+            "Decimals": {"folder": "Books/class-5/MATH/Decimals","prefix": "decimals","pages": [{"questions": {},"examples": {}}]},
+            "Rounding Numbers": {"folder": "Books/class-5/MATH/Rounding Numbers","prefix": "rounding","pages": [{"questions": {},"examples": {}}]},
+            "Measures of Length, Mass and Capacity": {"folder": "Books/class-5/MATH/Measures of Length, Mass and Capacity","prefix": "measures","pages": [{"questions": {},"examples": {}}]},
+            "Average": {"folder": "Books/class-5/MATH/Average","prefix": "average","pages": [{"questions": {},"examples": {}}]},
+            "Percentage": {"folder": "Books/class-5/MATH/Percentage","prefix": "percent","pages": [{"questions": {},"examples": {}}]},
+            "Time": {"folder": "Books/class-5/MATH/Time","prefix": "time","pages": [{"questions": {},"examples": {}}]},
+            "Money": {"folder": "Books/class-5/MATH/Money","prefix": "money","pages": [{"questions": {},"examples": {}}]},
+            "Basic Geometrical Concepts": {"folder": "Books/class-5/MATH/Basic Geometrical Concepts","prefix": "geom","pages": [{"questions": {},"examples": {}}]},
+            "Concept of Angles": {"folder": "Books/class-5/MATH/Concept of Angles","prefix": "angles","pages": [{"questions": {},"examples": {}}]},
+            "Parallel and Perpendicular Lines": {"folder": "Books/class-5/MATH/Parallel and Perpendicular Lines","prefix": "parallel","pages": [{"questions": {},"examples": {}}]},
+            "Triangles": {"folder": "Books/class-5/MATH/Triangles","prefix": "triangles","pages": [{"questions": {},"examples": {}}]},
+            "Circles": {"folder": "Books/class-5/MATH/Circles","prefix": "circles","pages": [{"questions": {},"examples": {}}]},
+            "Perimeters of Rectilinear Figures": {"folder": "Books/class-5/MATH/Perimeters of Rectilinear Figures","prefix": "perimeter","pages": [{"questions": {},"examples": {}}]},
+            "Area": {"folder": "Books/class-5/MATH/Area","prefix": "area","pages": [{"questions": {},"examples": {}},{"questions": {},"examples": {}},{"questions": {},"examples": {}},{"questions": {},"examples": {}},{"questions": {},"examples": {}},{"questions": {},"examples": {}},{"questions": {},"examples": {}}]},
+            "Volume": {"folder": "Books/class-5/MATH/Volume","prefix": "volume","pages": [{"questions": {},"examples": {}}]},
+            "Pictograph and Bar Graph": {"folder": "Books/class-5/MATH/Pictograph and Bar Graph","prefix": "graph","pages": [{"questions": {},"examples": {}}]}
+          }
+        }
+      }
+    }
+  ],
+  "history": [],
+  "queue": []
+}
