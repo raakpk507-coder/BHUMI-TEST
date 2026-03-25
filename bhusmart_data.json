@@ -10,7 +10,7 @@
           "chapters": {
             "Revision": {
               "folder": "Books/class-5/MATH/Revision",
-              "prefix": "rev",
+              "prefix": "ch1revision",
               "pages": [
                 {
                   "questions": {},
@@ -30,7 +30,7 @@
             },
             "Large Numbers (Up to Ten Crores)": {
               "folder": "Books/class-5/MATH/Large Numbers (Up to Ten Crores)",
-              "prefix": "largenum",
+              "prefix": "ch3largenumbers",
               "pages": [
                 {
                   "questions": {},
@@ -50,7 +50,7 @@
             },
             "Simplification": {
               "folder": "Books/class-5/MATH/Simplification",
-              "prefix": "simplify",
+              "prefix": "simplification",
               "pages": [
                 {
                   "questions": {},
@@ -60,7 +60,7 @@
             },
             "Factors and Multiples": {
               "folder": "Books/class-5/MATH/Factors and Multiples",
-              "prefix": "factors",
+              "prefix": "ch6factors",
               "pages": [
                 {
                   "questions": {},
@@ -70,7 +70,7 @@
             },
             "Fractions": {
               "folder": "Books/class-5/MATH/Fractions",
-              "prefix": "fractions",
+              "prefix": "ch7fractions",
               "pages": [
                 {
                   "questions": {},
@@ -110,7 +110,7 @@
             },
             "Multiplication and Division of Fractions": {
               "folder": "Books/class-5/MATH/Multiplication and Division of Fractions",
-              "prefix": "mulfrac",
+              "prefix": "ch9fractions",
               "pages": [
                 {
                   "questions": {},
@@ -120,7 +120,7 @@
             },
             "Decimals": {
               "folder": "Books/class-5/MATH/Decimals",
-              "prefix": "decimals",
+              "prefix": "ch10decimals",
               "pages": [
                 {
                   "questions": {},
@@ -130,7 +130,7 @@
             },
             "Rounding Numbers": {
               "folder": "Books/class-5/MATH/Rounding Numbers",
-              "prefix": "rounding",
+              "prefix": "ch11rounding",
               "pages": [
                 {
                   "questions": {},
@@ -140,7 +140,7 @@
             },
             "Measures of Length, Mass and Capacity": {
               "folder": "Books/class-5/MATH/Measures of Length, Mass and Capacity",
-              "prefix": "measures",
+              "prefix": "ch12measures",
               "pages": [
                 {
                   "questions": {},
@@ -150,7 +150,7 @@
             },
             "Average": {
               "folder": "Books/class-5/MATH/Average",
-              "prefix": "average",
+              "prefix": "ch13average",
               "pages": [
                 {
                   "questions": {},
@@ -160,7 +160,7 @@
             },
             "Percentage": {
               "folder": "Books/class-5/MATH/Percentage",
-              "prefix": "percent",
+              "prefix": "ch14percentage",
               "pages": [
                 {
                   "questions": {},
@@ -170,7 +170,7 @@
             },
             "Time": {
               "folder": "Books/class-5/MATH/Time",
-              "prefix": "time",
+              "prefix": "ch15time",
               "pages": [
                 {
                   "questions": {},
@@ -180,7 +180,7 @@
             },
             "Money": {
               "folder": "Books/class-5/MATH/Money",
-              "prefix": "money",
+              "prefix": "ch16money",
               "pages": [
                 {
                   "questions": {},
@@ -190,7 +190,7 @@
             },
             "Basic Geometrical Concepts": {
               "folder": "Books/class-5/MATH/Basic Geometrical Concepts",
-              "prefix": "geom",
+              "prefix": "ch17basicgeo",
               "pages": [
                 {
                   "questions": {},
@@ -200,7 +200,7 @@
             },
             "Concept of Angles": {
               "folder": "Books/class-5/MATH/Concept of Angles",
-              "prefix": "angles",
+              "prefix": "ch18",
               "pages": [
                 {
                   "questions": {},
@@ -210,7 +210,7 @@
             },
             "Parallel and Perpendicular Lines": {
               "folder": "Books/class-5/MATH/Parallel and Perpendicular Lines",
-              "prefix": "parallel",
+              "prefix": "ch19parallel",
               "pages": [
                 {
                   "questions": {},
@@ -220,7 +220,7 @@
             },
             "Triangles": {
               "folder": "Books/class-5/MATH/Triangles",
-              "prefix": "triangles",
+              "prefix": "ch20triangles",
               "pages": [
                 {
                   "questions": {},
@@ -230,7 +230,7 @@
             },
             "Circles": {
               "folder": "Books/class-5/MATH/Circles",
-              "prefix": "circles",
+              "prefix": "ch21circles",
               "pages": [
                 {
                   "questions": {},
@@ -240,7 +240,7 @@
             },
             "Perimeters of Rectilinear Figures": {
               "folder": "Books/class-5/MATH/Perimeters of Rectilinear Figures",
-              "prefix": "perimeter",
+              "prefix": "perimeters",
               "pages": [
                 {
                   "questions": {},
@@ -294,7 +294,7 @@
             },
             "Pictograph and Bar Graph": {
               "folder": "Books/class-5/MATH/Pictograph and Bar Graph",
-              "prefix": "graph",
+              "prefix": "pictograph",
               "pages": [
                 {
                   "questions": {},
