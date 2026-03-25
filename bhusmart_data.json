@@ -38,26 +38,6 @@
                 }
               ]
             },
-            "Operations on Large Numbers": {
-              "folder": "Books/class-5/MATH/Operations on Large Numbers",
-              "prefix": "oplargenum",
-              "pages": [
-                {
-                  "questions": {},
-                  "examples": {}
-                }
-              ]
-            },
-            "Simplification": {
-              "folder": "Books/class-5/MATH/Simplification",
-              "prefix": "simplification",
-              "pages": [
-                {
-                  "questions": {},
-                  "examples": {}
-                }
-              ]
-            },
             "Factors and Multiples": {
               "folder": "Books/class-5/MATH/Factors and Multiples",
               "prefix": "ch6factors",
