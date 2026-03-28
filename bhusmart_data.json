@@ -3111,8 +3111,18 @@
                   "total": 2
                 },
                 {
-                  "questions": {},
-                  "examples": {}
+                  "questions": {
+                    "14": {
+                      "used": 0,
+                      "lastDate": null
+                    },
+                    "15": {
+                      "used": 0,
+                      "lastDate": null
+                    }
+                  },
+                  "examples": {},
+                  "total": 2
                 }
               ]
             }
